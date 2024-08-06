@@ -1,0 +1,609 @@
+:root {
+    --primary: #9AAAA6;
+    --dark-green: #487279;
+    --secondary: #F1B8C2;
+    --warning: #C97C82;
+    --grey: #989898;
+    --light-grey: #B7B7B7;
+    --pink-grey: #C0B0B2;
+    --confirm: #BBA366;
+}
+
+body {
+    min-width: 550px;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    box-sizing: border-box;
+}
+
+::backdrop{
+    background-color: #989898;
+    opacity: 0.75;
+}
+
+/* MODAL */
+dialog {
+    padding: 0;
+    padding-bottom: 20px;
+    border: none;
+    border-radius: 10px;
+}
+
+dialog[open] {
+    animation: show 0.8s ease normal;
+}
+
+.modal {
+    width: 400px;
+    display: grid;
+    grid-template-areas:
+        'header'
+        'main'
+        'footer';
+    row-gap: 10px;
+    animation: hide 1s ease normal;
+}
+
+#modal-header{
+    grid-area: header;
+}
+
+#modal-content {
+    margin: 20px 10px 20px 10px;
+    grid-area: main;
+    text-align: center;
+}
+
+h2.failed {
+    background-color: var(--warning);
+}
+
+h2.successful {
+    background-color: var(--dark-green);
+}
+
+.stress-span {
+    color: var(--warning);
+    font-weight: 700;
+}
+
+#modal-footer {
+    margin: 0 20px 0 20px;
+    display: flex;
+    justify-content: space-between;
+    grid-area: footer;
+}
+
+/* BUTTON */
+button {
+    font-family: "Cabin", sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    font-style: normal;
+    border: none;
+    cursor: pointer;
+    color: white;
+}
+
+.round-btn {
+    position: relative;
+    display: inline-block;
+    border-radius: 50px;
+    padding: 4px 6px 4px 6px;
+    border: none;
+    margin-right: 5px;
+    cursor: pointer;
+    background-color: var(--pink-grey);
+}
+
+.square-btn {
+    padding: 10px 15px 10px 15px;
+    margin-top: 15px;
+}
+
+button i {
+    color: white;
+}
+
+.view-btn {
+    background-color: var(--pink-grey);
+}
+
+.close-btn {
+    background-color: var(--pink-grey);
+}
+
+.add-btn {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    padding: 15px;
+    background-color: var(--secondary);
+}
+
+.confirm-btn {
+    margin-right: 5px;
+    background-color: var(--primary);
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+.cancel-btn {
+    background-color: var(--pink-grey);
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+}
+
+#modal-delete-btn {
+    background-color: var(--warning);
+}
+
+/*TOGGLE*/
+.toggle-container {
+    width: 48%;
+}
+.toggle {
+    padding: 5px 0 5px 0;
+    width: 100%;
+    margin: 10px 0 10px 0;
+    display: flex;
+    justify-content: space-between;
+    border: none;
+    border-radius: 5px;
+    background-color: rgba(221, 218, 218, 0.3)
+}
+
+.toggle.enabled{
+    background-color: rgba(221, 218, 218, 0.3);
+    border-radius: 5px;
+}
+
+.toggle-btn{
+    width: calc(100%/3);
+    font-family: "Cabin", sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    font-style: normal;
+    border: none;
+    cursor: pointer;
+    padding: 3px 0 3px 0;
+    color: var(--grey);
+    margin: 0 4px 0 4px;
+    text-align: center;
+}
+
+.toggle-btn.active{
+    border-radius: 3px;
+}
+
+.toggle-btn.active#toggle-active{
+    background-color: var(--dark-green);
+    color: white;
+}
+
+.toggle-btn.active#toggle-inactive {
+    background-color: var(--grey);
+    color: white;
+}
+
+.toggle-btn.active#toggle-warning {
+    background-color: var(--warning);
+    color: white;
+}
+
+/* TOOLTIP TEXT */
+.tooltiptext {
+    visibility: hidden;
+    width: 60px;
+    background-color: rgb(156, 154, 154, 0.7);
+    color: #fff;
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 6px;
+    top: 125%;
+    left: 50%;
+    opacity: 0;
+    transition: opacity 0.5s;
+
+    /* Position the tooltip text - see examples below! */
+    position: absolute;
+    z-index: 1;
+    margin-left: -30px;
+    font-size: 12px;
+}
+
+.tooltiptext::after {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent rgb(156, 154, 154, 0.7) transparent;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+button:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}
+
+/*TEXT*/
+.note-lg {
+    font-family: "Cabin", sans-serif;
+    font-size: 18px;
+    font-weight: 400;
+    font-style: normal;
+    font-variation-settings: "wdth" 100;
+    color:#989898;
+}
+h1 {
+    padding: 10px 0 0 20px;
+    margin: 0;
+    color: black;
+    font-family: "Cabin", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 700;
+    font-style: normal;
+    font-variation-settings: "wdth" 100;
+    width: 200px;
+}
+
+span {
+    font-family: "Cabin", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    font-variation-settings: "wdth" 100;
+}
+
+h2 {
+    margin: 0;
+    padding: 10px 0 10px 20px;
+    color: white;
+    background-color: var(--pink-grey);
+    width: calc(100% - 20px);
+    font-family: "Cabin", sans-serif;
+    font-size: 18px;
+    font-weight: 400;
+    font-style: normal;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+.notice {
+    display: none;
+    font-family: "Cabin", sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    font-style: italic;
+}
+
+.notice#error {
+    display: block;
+    color: var(--warning);
+}
+
+.notice#success {
+    display: block;
+    color: var(--dark-green);
+}
+
+/* ICONS */
+.fa-solid.fa-circle.status {
+    height: 7px;
+    width: 7px;
+}
+
+.fa-solid.fa-circle.status.active {
+    color: var(--dark-green);
+}
+
+.fa-solid.fa-circle.status.inactive {
+    color: var(--grey);
+}
+
+.fa-solid.fa-circle.status.warning {
+    color: var(--warning);
+}
+
+/*Navbar*/
+nav {
+    background-image: linear-gradient(to right, var(--primary), #F1B8C2);
+    height: 105px;
+}
+
+hr {
+    border-color: rgb(256,256,256, 0.3);
+}
+
+.header {
+    display: flex;
+    flex-direction: row;
+}
+
+.clock {
+    display: flex;
+    align-self: end;
+    justify-content: flex-end;
+    width: calc(100vw - 200px);
+}
+
+.clock span {
+    color: black;
+    padding: 0 10px 0 5px;
+    font-weight: 600;
+}
+
+.clock i {
+    color: black;
+    align-self: center;
+    font-wight: 600;
+}
+
+ul { 
+    overflow-x: scroll;
+    padding-left: 20px;
+    margin: 0;
+    text-decoration: none;
+    list-style: none;
+    display: flex;
+    flex-direction: row;
+}
+
+ul li{
+    margin-right: 5px;
+    padding: 10px 30px 19px 10px;
+    transition: 0.3s;
+    min-width: 120px;
+}
+
+ul li span {
+    color: white;
+}
+
+ul li i {
+    color: white;
+    padding-right: 5px;
+}
+
+ul li:hover {
+    cursor: pointer;
+    background-color: white;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+ul li:hover i {
+    color: var(--dark-green);
+}
+
+ul li:hover span {
+    color: var(--dark-green);
+    font-weight: 600;
+}
+
+.active {
+    background-color: white;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+.active i {
+    color: var(--dark-green);
+}
+
+.active span {
+    color: var(--dark-green);
+    font-weight: 600;
+}
+
+/* MAIN - Branches, Services, Staff, Vouchers */
+/* COL-1 */
+main {
+    display: flex;
+    align-items: center;
+    background-color: #EDEDED;
+    height: calc(100vh - 105px);
+}
+
+.col-1 {
+    position: relative;
+    background-color: white;
+    height: calc(100vh - 150px);
+    flex-basis: 60%;
+    border-radius: 10px;
+    margin: 0 20px 0 20px;
+    opacity: 0;
+    transition: all 0.7s ease-in-out;
+    transform: scale(0.8);
+}
+
+.col-1#onShow{
+    opacity: 1;
+    transform: scale(1);
+}
+
+/*Overrides DataTables style*/
+div.dt-container {
+    margin: 10px 20px 10px 20px;
+    font-family: "Cabin", sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    font-style: normal;
+    height: 80%;
+    overflow-y: scroll;
+    -ms-overflow-style: none;
+        /* Internet Explorer 10+ */
+        scrollbar-width: none;
+        /* Firefox */
+}
+
+div.dt-container::-webkit-scrollbar {
+    display: none;
+    /* Safari and Chrome */
+}
+
+table.dataTable thead th {
+    font-size: 16px;
+}
+
+/* COL-2 */
+.col-2 {
+    position: relative;
+    align-self: self-start;
+    background-color: white;
+    height: 100px;
+    flex-basis: 40%;
+    border-radius: 10px;
+    margin-top: 23px;
+    margin-right: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    opacity: 0;
+    transition: all 0.7s ease-in-out;
+    overflow: hidden;
+    transform: scale(0.8);
+}
+
+.col-2#onShow {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/*Form*/
+/*Text Input*/
+.form-input {
+    margin: 10px 0 10px 0;
+    font-family: "Cabin", sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    font-style: normal;
+    width: 100%;
+    padding: 8px 0 8px 0;
+    border: 1px solid var(--light-grey);
+    border-radius: 5px;
+    text-indent: 10px;
+    color: var(--light-grey);
+}
+
+.form-input:focus {
+    outline: none;
+    border: 1px solid black;
+}
+
+/*Select*/
+select {
+    cursor: pointer;
+    -ms-overflow-style: none;
+    /* Internet Explorer 10+ */
+    scrollbar-width: none;
+    /* Firefox */
+}
+
+select::-webkit-scrollbar {
+    display: none;
+    /* Safari and Chrome */
+}
+
+.form-select {
+    width: 100%;
+    margin: 10px 0 10px 0;
+    font-family: "Cabin", sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    font-style: normal;
+    padding: 8px 0 8px 0;
+    text-indent: 10px;
+    border: 1px solid var(--grey);
+    border-radius: 5px;
+}
+
+.option-container {
+    display: grid;
+    width: 100%;
+    gap: 2px;
+    grid-template-columns: auto auto;
+    grid-template-rows: calc(80px/3) calc(80px/3) calc(80px/3);
+    height: 80px;
+    border: 1px solid var(--light-grey);
+    border-radius: 5px;
+    overflow-y: scroll;
+}
+
+.option-title {
+    font-size: 12px;
+}
+
+.option{
+    cursor: pointer;
+    margin: 2px;
+    text-align: center;
+    background-color: var(--light-grey);
+    color: var(--grey);
+    padding: 1px 2px 1px 2px;
+    border-radius: 3px;
+    opacity: 0.7;
+}
+
+/*Labels/Form texts*/
+.form-label {
+    color: var(--grey);
+    font-family: "Cabin", sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    font-style: normal;
+}
+
+/*Form Layout*/
+.form {
+    width: 80%;
+    margin: 30px 20px 30px 20px;
+}
+
+.double-inputs{
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.selection-box{
+    width: 48%;
+}
+
+.text-input-container.half {
+    width: 48%;
+}
+
+.main-func-btns {
+    position: absolute;
+    right: 8px;
+    top: 8px;
+}
+
+.confirm-btns {
+    display: none;
+}
+
+@media (width < 1070px) {
+    .col-2 {
+        display: none;
+    }
+
+    .col-1 {
+        flex-basis: 100%;
+    }
+}
+
+@keyframes show {
+    from {
+        transform: translateY(-20%);
+    }
+
+    to {
+        transform: translateY(0%);
+    }
+}

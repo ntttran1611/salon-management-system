@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="description" content="Salon's service list">
+        <meta name="author" content="Ivy Tran">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Our services | Sweetie Nails and Beauty</title>
+
+        <!-- Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Lobster&family=Prompt:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Questrial&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Lily+Script+One&display=swap" rel="stylesheet">
+
+        <!-- Font Awesome Icon -->
+        <script src="https://kit.fontawesome.com/46dea8b501.js" crossorigin="anonymous"></script>
+
+        <!-- CSS stylesheet -->
+        <link rel="Stylesheet" href="css/service-style.css">
+    </head>
+    <body>
+        <img class="flower-tr" rel="flower" src="images/flower-2-pattern.png" height="600px" width="600px" />
+        <img class="flower-bl" rel="flower" src="images/flower-3-pattern.png" height="600px" width="600px" />
+        <img class="flower-br" rel="flower" src="images/flower-1-pattern.png" height="250px" width="500px"/>
+        <div class="container">
+            <header>
+                <a href="index.html"><img class="logo" rel="Sweetie Logo" src="images/logo.png" height="80px" width="80px" /></a>
+                <h1>Sweetie Services</h1>
+            </header>
+            <main>
+                <button class="prev" id="prev"><img src="images/angle-left.png" rel="photo" height="32px" width="32px" /></button>
+                <ul id="service-list" class="service-list">
+                </ul>
+                <button class="next" id="next"><img src="images/next.png" rel="photo" height="32px" width="32px" /></button>
+            </main>
+            <footer>
+                <p>Decided your services? <a href="sign-in.html">SIGN IN</a></p>
+                <h4>Sweetie Nails & Beauty</h4>
+            </footer>
+        </div>
+        <script type="module" src="js/service-controller.js"></script>
+    </body>
+</html>

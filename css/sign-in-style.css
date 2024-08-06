@@ -1,0 +1,337 @@
+body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    box-sizing: border-box;
+    background-color: #C0D0CC;
+}
+
+
+.flower-tr {
+    position: absolute;
+    right: 1%;
+    top: 1%;
+}
+
+.flower-bl {
+    position: absolute;
+    bottom: 1%;
+    left: 1%;
+}
+
+.flower-br {
+    position: absolute;
+    bottom: 1%;
+    right: 1%;
+}
+
+.container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+/* MAIN */
+main {
+    background-color: rgba(255, 255, 255, 0.75);
+    flex-basis: 90%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* COL-1 - Client Details*/
+.col-1{
+    animation: 1s slideDown;
+    width: 90%;
+    margin: 4% 2% 4% 2%;
+    flex-basis: 40%;
+}
+
+.sign-in-box{
+    padding: 3% 0 3% 0;
+    background-color: #C0D0CC;
+    max-width: 1800px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius:  10px;;
+}
+
+.row-1 {
+    width: 90%;
+    margin: 2% 0 0 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.row-2 {
+    width: 90%;
+    margin: 2% 0 0 0;
+    display: none;
+    flex-direction: column;
+}
+
+.input-container {
+    display: flex;
+    flex-direction: column;
+    margin: 2% 0 0 0;
+}
+
+.input-container input {
+    border-style: none;
+    padding: 1% 1% 1% 1%;
+    
+    border-radius: 5px;
+    box-shadow: 2px 5px 5px rgba(80, 80, 80, 0.3);
+    font-family: "Quicksand", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 1rem;
+}
+
+.input-container input:focus {
+    outline: none;
+}
+
+label {
+    font-family: "Questrial", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 1rem;
+    color: #505050;
+}
+
+.prim-button {
+    align-self: flex-end;
+    margin: 2% 0 2% 0;
+    border-style: none;
+    width: auto;
+    padding: 1% 2% 1% 2%;
+    border-radius: 5px;
+    background-color: #F1B8C2;
+    color: white;
+    font-family: "Questrial", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 1rem;
+    box-shadow: 2px 5px 5px rgba(80, 80, 80, 0.3);
+}
+
+.prim-button:hover {
+    cursor: pointer;
+}
+
+#return-to-home-page {
+    align-self: center;
+}
+
+.col-1 a {
+    text-decoration: none;
+    background-color: grey;
+    color: white;
+    font-family: 'Questrial', sans-serif;
+    font-weight: 500;
+    font-size: 0.9rem;
+    padding: 1% 2% 1% 2%;
+    border-radius: 5px;
+}
+
+.col-1 p {
+    font-family: "Questrial", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 0.9rem;
+    color: #505050;
+}
+
+.col-1 span {
+    margin-top: 2%;
+    font-family: "Questrial", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 0.8rem;
+    color: brown;
+}
+
+#confirm-text {
+    margin: 0 5% 0 5%;
+    font-family: "Questrial", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 1.25rem;
+    color: #505050;
+    line-height: 1.5;
+}
+
+/* COL-2 - Service list*/
+.col-2 {
+    width: 90%;
+    display: none;
+    flex-direction: column;
+    margin: 2% 1% 2% 1%;
+    flex-basis: 60%;
+    height: auto;
+    background-color: #C0D0CC;
+    border-radius: 15px;
+    animation: 1s slideDown;
+}
+
+.service-list-box {
+    overflow-y: scroll;
+    height: 100%;
+    max-height: 300px;
+    width: 90%;
+    background-color: white;
+    margin: 5% 5% 0 5%;
+    -ms-overflow-style: none;
+        /* Internet Explorer 10+ */
+    scrollbar-width: none;
+        /* Firefox */
+}
+
+.service-list-box::-webkit-scrollbar {
+    display: none;
+    /* Safari and Chrome */
+}
+
+.col-2 .prim-button {
+    margin: 3% 5% 3% 0;
+}
+
+ul {
+    margin: 0;
+    padding: 0;
+}
+
+ul li {
+    display: flex;
+    text-decoration: none;
+}
+
+ul li:nth-child(even) {
+    background-color: rgba(192, 208, 204, 0.3);
+}
+
+.service {
+    margin-left: 1%;
+    flex-basis: 90%;
+}
+
+.control-button {
+    flex-basis: 10%;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+    margin-right: 1%;
+}
+
+.control-button button {
+    border-style: none;
+    border-radius: 20px;
+    height: 20px;
+    width: 20px;
+    background-color: #BCA477;
+    color: white;
+    font-size: 1rem;
+    align-self: center;
+}
+
+.control-button button:hover {
+    cursor: pointer;
+}
+
+.col-2 h3 {
+    color: #505050;
+    font-family: "Quicksand", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 800;
+    font-style: normal;
+    font-size: 1.25rem;
+    margin-left: 1%;
+}
+
+.col-2 p {
+    margin-left: 1%;
+    color: #505050;
+    font-family: "Quicksand", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 1rem;
+    overflow: hidden;
+}
+
+/* FOOTER */
+footer {
+    background-color: rgba(255, 255, 255, 0.75);
+    flex-basis: 10%;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+}
+
+footer h4 {
+    font-family: "Lily Script One", system-ui;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 1rem;
+    color: #BCA477;
+}
+
+/* MEDIA QUERY */
+@media (max-width: 1024px) and (height > 600px) {
+    .flower-bl {
+        display: none;
+    }
+
+    .flower-br {
+        display: none;
+    }
+
+    .flower-tr {
+        display: none;
+    }
+
+    main {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 640px){
+    .service p {
+        display: none;
+    }
+
+    .service h3 {
+        font-size: 0.9rem;
+    }
+}
+
+@keyframes slideDown {
+    0% {
+        transform: translateY(-10%);
+    }
+
+    100% {
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideLeft {
+    0% {
+        transform: translatex(10%);
+    }
+    
+    100% {
+        transform: translateX(0);
+    }
+}

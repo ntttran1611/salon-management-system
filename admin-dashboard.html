@@ -1,0 +1,84 @@
+<!--Admin dashboard-->
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="description" content="Sweetie Dashboard">
+        <meta name="author" content="Ivy Tran">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Sweetie Dashboard</title>
+
+        <!-- Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Cabin:ital,wght@0,400..700;1,400..700&display=swap"
+            rel="stylesheet">
+
+        <!-- Font Awesome Icon -->
+        <script src="https://kit.fontawesome.com/a927491084.js" crossorigin="anonymous"></script>
+        
+        <!-- CSS -->
+        <link rel="Stylesheet" href="css/admin-dashboard-style.css" >
+        <link rel="stylesheet" href="lib/datatables/css/dataTables.css" />
+
+
+    </head>
+    <body>
+        <dialog>
+            <h2 id="modal-header"></h2>
+            <div id="modal-content"></div>
+            <div id="modal-footer"></div>
+        </dialog>
+        <nav>
+            <div class="header">
+                <h1>Sweetie's Admin</h1>
+                <div class="clock">
+                    <i class="fa-solid fa-clock"></i>
+                    <span>15/07/2024, 10:14</span>
+                </div>
+            </div>
+            <hr>
+            <div>
+                <ul>
+                    <li onclick="showTab('bills')" id="bills" class="tab-link active"><i class="fa-solid fa-file-invoice-dollar"></i><span>Bills</span></span></li>
+                    <li onclick="showTab('vouchers')" id="vouchers" class="tab-link"><i class="fa-solid fa-gift"></i><span>Vouchers</span></span></li>
+                    <li onclick="showTab('income')" id="income" class="tab-link"><i class="fa-solid fa-money-check-dollar"></i><span>Income</span></span></li>
+                    <li onclick="showTab('performance')" id="performance" class="tab-link"><i class="fa-solid fa-chart-simple"></i></i><span>Performance</span></span></li>
+                    <li onclick="showTab('staff')" id="staff" class="tab-link"><i class="fa-solid fa-user"></i><span>Staff</span></span></li>
+                    <li onclick="showTab('services')" id="services" class="tab-link"><i class="fa-solid fa-hand-holding-heart"></i><span>Services</span></span></li>
+                    <li onclick="showTab('branches')" id="branches" class="tab-link"><i class="fa-solid fa-code-branch"></i><span>Branches</span></span></li>
+                </ul>
+            </div>
+        </nav>
+        <main>
+        </main>
+        
+        <!--jquery-->
+        <script type="text/javascript" src="lib/jquery/jquery-3.7.1.min.js"></script>
+
+        <!--dataTables-->
+        <script type="text/javascript" src="lib/datatables/js/dataTables.js"></script>
+        
+        <!--dashboard-controller-->
+        <script type="module" src="js/dashboard-branches.js"></script>
+        <script type="module" src="js/dashboard-services.js"></script>
+        <script type="module" src="js/dashboard-vouchers.js"></script>
+        <script type="module" src="js/dashboard-staff.js"></script>
+
+        <script type="text/javascript">
+
+            //switch a tab to be active when being clicked
+            function showTab(tabName) {
+                const tabLinks = document.getElementsByClassName('tab-link');
+                for (let i = 0; i < tabLinks.length; i++) {
+                    //when a tab is clicked, set all classnames to 'inactive'
+                    tabLinks[i].className = tabLinks[i].className.replace(" active", "");
+                }
+
+                //set the selected tab to 'active'
+                document.getElementById(tabName).className += " active";
+            }
+
+        </script>
+    </body>
+</html>

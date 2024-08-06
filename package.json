@@ -1,0 +1,12 @@
+{
+  "name": "sweetie-management-systen-basic",
+  "version": "1.0.0",
+  "description": "Manage Nail Salon",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ivy Tran",
+  "license": "ISC",
+  "type": "module"
+}
