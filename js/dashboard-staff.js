@@ -174,7 +174,7 @@ function getInputContent(staff, action){
     //add content to the form inputs/selects if editing a staff
     //if adding, leave the inputs blank
     let tabContent = `
-            <h2> ${action > 0 ? `Staff #${staff.id}` : `Adding a new staff` }</h2>
+            <h2> ${action > 0 ? `Staff #${staff.id} - ${staff.firstName} ${staff.lastName}` : `Adding a new staff` }</h2>
             <div class="main-func-btns">
                 ${action ? `<button id="edit-btn" class="round-btn edit-btn">
                     <i class="fa-solid fa-pen-to-square fa-lg"></i>

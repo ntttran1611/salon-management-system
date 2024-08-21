@@ -5,6 +5,7 @@
     --warning: #C97C82;
     --grey: #989898;
     --light-grey: #B7B7B7;
+    --second-light-grey: #EDEDED;
     --pink-grey: #C0B0B2;
     --confirm: #BBA366;
 }
@@ -148,7 +149,7 @@ button i {
     width: 100%;
     margin: 10px 0 10px 0;
     display: flex;
-    justify-content: space-between;
+    justify-content: space-evenly;
     border: none;
     border-radius: 5px;
     background-color: rgba(221, 218, 218, 0.3)
@@ -232,6 +233,8 @@ button:hover .tooltiptext {
 
 /*TEXT*/
 .note-lg {
+    display: flex;
+    justify-content: center;
     font-family: "Cabin", sans-serif;
     font-size: 18px;
     font-weight: 400;
@@ -401,19 +404,30 @@ ul li:hover span {
 }
 
 /* MAIN - Branches, Services, Staff, Vouchers */
-/* COL-1 */
 main {
     display: flex;
     align-items: center;
     background-color: #EDEDED;
     height: calc(100vh - 105px);
 }
-
+/* COL-1 */
 .col-1 {
     position: relative;
     background-color: white;
     height: calc(100vh - 150px);
     flex-basis: 60%;
+    border-radius: 10px;
+    margin: 0 20px 0 20px;
+    opacity: 0;
+    transition: all 0.7s ease-in-out;
+    transform: scale(0.8);
+}
+
+.col-1.sm {
+    position: relative;
+    background-color: white;
+    height: calc(100vh - 150px);
+    flex-basis: 25%;
     border-radius: 10px;
     margin: 0 20px 0 20px;
     opacity: 0;
@@ -434,6 +448,7 @@ div.dt-container {
     font-weight: 400;
     font-style: normal;
     height: 80%;
+    width: 95%;
     overflow-y: scroll;
     -ms-overflow-style: none;
         /* Internet Explorer 10+ */
@@ -469,9 +484,94 @@ table.dataTable thead th {
     transform: scale(0.8);
 }
 
+.col-2.lg {
+    position: relative;
+    align-self: self-start;
+    background-color: white;
+    height: calc(100vh - 150px);
+    flex-basis: 75%;
+    border-radius: 10px;
+    margin-top: 23px;
+    margin-right: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    opacity: 0;
+    transition: all 0.7s ease-in-out;
+    overflow: hidden;
+    transform: scale(0.8);
+}
+
 .col-2#onShow {
     opacity: 1;
     transform: scale(1);
+}
+
+.bill-board-head {
+    width: 100%;
+    background-color: var(--pink-grey);
+    height: 50px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    display: flex;
+    justify-content: end;
+}
+
+/*List*/
+.vertical-list{
+    height: calc(100% - 100px);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    overflow-y: scroll;
+    -ms-overflow-style: none;
+        /* Internet Explorer 10+ */
+        scrollbar-width: none;
+        /* Firefox */
+}
+
+.vertical-list::-webkit-scrollbar {
+    display: none;
+    /* Safari and Chrome */
+}
+
+.list-item{
+    height: 40px;
+    display: flex;
+    align-items: center;
+    margin: 0 10px 0 10px;
+}
+
+.list-item.checked{
+    background-color: var(--second-light-grey);
+}
+
+.choose-indicator{
+    height: 100%;
+    width: 10px;
+    background-color: white;
+    transition: 0.3s;
+    border-radius: 5px;
+}
+
+.choose-indicator.active{
+    background-color: var(--secondary);
+}
+
+.list-item:hover .choose-indicator{
+    background-color: var(--secondary);
+}
+
+.list-item:hover{
+    cursor: pointer;
+}
+
+.list-item-content{
+    margin-left: 10px;
+    font-family: "Cabin", sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    font-style: normal;
 }
 
 /*Form*/
@@ -495,6 +595,22 @@ table.dataTable thead th {
     border: 1px solid black;
 }
 
+.table-input{
+    font-family: "Cabin", sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    font-style: normal;
+    width: 100%;
+    border: none;
+    background-color: transparent;
+    padding: 5px 0 5px 0;
+    margin: -5px 0 -5px 0;
+}
+
+.table-input:focus{
+    outline: none;
+}
+
 /*Select*/
 select {
     cursor: pointer;
@@ -509,6 +625,14 @@ select::-webkit-scrollbar {
     /* Safari and Chrome */
 }
 
+.form-select.bill-board{
+    background-color: rgb(221, 218, 218, 0);
+    border: none;
+    font-weight: 600;
+    font-size: 16px;
+    
+}
+
 .form-select {
     width: 100%;
     margin: 10px 0 10px 0;
@@ -520,6 +644,22 @@ select::-webkit-scrollbar {
     text-indent: 10px;
     border: 1px solid var(--grey);
     border-radius: 5px;
+}
+
+.table-select {
+    background-color: transparent;
+    width: 100%;
+    font-family: "Cabin", sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    font-style: normal;
+    border: none;
+    padding: 5px 0 5px 0;
+    margin: -5px 0 -5px 0;
+}
+
+.table-select:focus{
+    outline: none;
 }
 
 .option-container {
