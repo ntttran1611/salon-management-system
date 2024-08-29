@@ -4,15 +4,17 @@ export const Bills = [
         cusName: 'Alexandra',
         services: [
             {
-                id: 2,
+                id: 0,
                 discount: 0,
-                staffId: -1,
+                serviceId: 2,
+                staffId: 4,
                 note: '', 
             },
             {
-                id: 4,
+                id: 1,
                 discount: 0,
-                staffId: -1,
+                serviceId: 4,
+                staffId: 6,
                 note: '',
             }
         ],
@@ -34,14 +36,16 @@ export const Bills = [
         cusName: 'Sarah Lilly',
         services: [
             {
-                id: 1,
+                id: 0,
                 discount: 0,
+                serviceId: 1,
                 staffId: -1,
                 note: '', 
             },
             {
-                id: 2,
+                id: 1,
                 discount: 0,
+                serviceId: 2,
                 staffId: -1,
                 note: '',
             }
@@ -64,8 +68,9 @@ export const Bills = [
         cusName: 'Alex Fok',
         services: [
             {
-                id: 2,
+                id: 0,
                 discount: 0,
+                serviceId: 2,
                 staffId: -1,
                 note: '', 
             },
@@ -88,8 +93,9 @@ export const Bills = [
         cusName: 'Francine',
         services: [
             {
-                id: 4,
+                id: 0,
                 discount: 0,
+                serviceId: 4,
                 staffId: -1,
                 note: '', 
             },
@@ -112,14 +118,16 @@ export const Bills = [
         cusName: 'Olivia',
         services: [
             {
-                id: 3,
+                id: 0,
                 discount: 0,
+                serviceId: 3,
                 staffId: -1,
                 note: '', 
             },
             {
-                id: 8,
+                id: 1,
                 discount: 0,
+                serviceId: 8,
                 staffId: -1,
                 note: '',
             }
@@ -142,14 +150,16 @@ export const Bills = [
         cusName: 'Lulu Chen',
         services: [
             {
-                id: 5,
+                id: 0,
                 discount: 0,
+                serviceId: 5,
                 staffId: -1,
                 note: '', 
             },
             {
-                id: 2,
+                id: 1,
                 discount: 0,
+                serviceId: 2,
                 staffId: -1,
                 note: '',
             }
@@ -172,14 +182,16 @@ export const Bills = [
         cusName: 'Sophia',
         services: [
             {
-                id: 9,
+                id: 0,
                 discount: 0,
+                serviceId: 9,
                 staffId: -1,
                 note: '', 
             },
             {
                 id: 1,
                 discount: 0,
+                serviceId: 1,
                 staffId: -1,
                 note: '',
             }
@@ -202,14 +214,16 @@ export const Bills = [
         cusName: 'Cami Ho',
         services: [
             {
-                id: 6,
+                id: 0,
                 discount: 0,
+                serviceId: 6,
                 staffId: -1,
                 note: '', 
             },
             {
-                id: 2,
+                id: 1,
                 discount: 0,
+                serviceId: 2,
                 staffId: -1,
                 note: '',
             }

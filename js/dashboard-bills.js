@@ -2,7 +2,7 @@ import { Bills } from "../data/bill-list.js";
 import { Branches } from "../data/branch-list.js";
 import { serviceList } from "../data/service-list.js";
 import { Staff } from "../data/staff-list.js";
-import { enableSelects } from "../lib/functions/shared.js";
+import { Bill } from "./objects/bill.js";
 
 document.querySelector("#bills").addEventListener('click', loadPage);
 window.onload = loadPage;
@@ -50,7 +50,7 @@ function getBillList(){
     } else {
         return `<div class="vertical-list">${tempBillsList.map((bill) => {
             return `<div id=${bill.id} class="list-item ${bill.paid ? `checked` : ''}">
-                        <div id=indicator-${bill.id} class="choose-indicator"></div>
+                        <div class="choose-indicator"></div>
                         <div class="list-item-content" id=${bill.id}>${bill.id} - ${bill.cusName}</div>
                     </div>`
             }).join('')}
@@ -58,23 +58,16 @@ function getBillList(){
     }
 }
 
-//activate choose indicator
-function activateIndicator(id){
-    const chooseIndicators = document.querySelectorAll('.choose-indicator');
-    for(let i=0; i<chooseIndicators.length; i++){
-        chooseIndicators[i].className = "choose-indicator";
-    }
-    document.querySelector(`#indicator-${id}`).className += ' active';
-}
-
 //display a bill's info when a list item is clicked
 function handleListItemClicked(id){
+    const currentBill = new Bill(tempBillsList.find((bill) => bill.id == id));
+    
     //switch the indicator from white to pink
     activateIndicator(id);
-
-    const bill = tempBillsList.find((bill) => bill.id == id);
+    
     //display bill details
-    document.querySelector('.col-2').innerHTML = generateBillContent(bill);
+    document.querySelector('.col-2').innerHTML = currentBill.generateBillContent(tempServiceList, tempStaffList);
+    setStaffAndServices(currentBill.getBillServices());
 
     //build the table
     new DataTable('#myTable', {
@@ -84,50 +77,30 @@ function handleListItemClicked(id){
     });
 }
 
-//generate bill info to html
-function generateBillContent(item){
-    const rows = getRows(item);
-    //console.log(item);
-    return `
-        <h2>Bill ID: ${item.id} | Client's name: ${item.cusName} | Contact: ${item.mobile} | Come at: ${item.entranceDate}, ${item.entranceTime}</h2>
-        <table id="myTable" class="hover" style="width: 100%">
-            <thead>
-                <tr>
-                    <th>Service</th>
-                    <th>Price</th>
-                    <th>Done by</th>
-                    <th>Discount</th>
-                    <th>Total</th>
-                    <th>Note</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${rows}
-            </tbody>
-        </table>
-    `;
+function handleServiceInfoChanged(id){
+
 }
 
-//get row content for the service table
-function getRows(item){
-    const services = item.services;
-    const serviceOptions = tempServiceList.map((service)=>{
-        return `<option value=${service.id}>${service.title}</option>`
-    }).join('');
-    const staffOptions = tempStaffList.map((staff)=>{
-        return `<option value=${staff.id}>${staff.firstName} ${staff.lastName}</option>`
-    })
-    let rowContent = services.map((item) => {
-        const service = tempServiceList.find((service)=>service.id == item.id);
-        const staff = tempStaffList.find((staff)=>staff.id == item.staffId);
-        return `<tr>
-            <td><select class="table-select">${serviceOptions}</select></td>
-            <td>${service.price}</td>
-            <td><select class="table-select">${staffOptions}</select></td>
-            <td><input class="table-input" type="text" name="bill-discount" id="bill-discount" value=${item.discount} placeholder="0"></td>
-            <td>${service.price - item.discount}</td>
-            <td><input class="table-input" type="text" name="bill-note" id="bill-note" value="${item.note}" placeholder="Enter something to describe this bill"></td>
-        </tr>`
-    }).join('');
-    return rowContent;
+//change choose indicator's color
+function activateIndicator(id){
+    const listItems = document.querySelectorAll(".list-item");
+    for(let i=0; i<listItems.length; i++){
+        listItems[i].children[0].className = "choose-indicator";
+        listItems[i].children[1].style.fontWeight = "400";
+        if(listItems[i].id == id){
+            listItems[i].children[0].className += " active";
+            listItems[i].children[1].style.fontWeight = "700";
+        }
+    }
+}
+
+//display services listed in the bill and corresponding staff
+function setStaffAndServices(services){
+    const serviceSelects = document.querySelectorAll('.table-select.service');
+    const staffSelects = document.querySelectorAll('.table-select.staff');
+    for(let i=0;i<services.length;i++){
+        const billServices = services;
+        serviceSelects[i].value = billServices[i].serviceId;
+        staffSelects[i].value = billServices[i].staffId == -1 ? 1 : billServices[i].staffId;
+    }
 }
