@@ -57,7 +57,8 @@ export class Bill{
         let total = 0;
         this.#services.forEach((service)=> {
             const result = serviceList.find((item)=>item.id == service.serviceId);
-            total += result.price;
+            let finalPrice = result.price - service.discount;
+            total += finalPrice;
         });
         return total;
     }

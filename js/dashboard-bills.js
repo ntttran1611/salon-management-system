@@ -3,7 +3,10 @@ import { Branches } from "../data/branch-list.js";
 import { serviceList } from "../data/service-list.js";
 import { Staff } from "../data/staff-list.js";
 import { Bill } from "./objects/bill.js";
-import { showDeleteAlert } from "../lib/components/dialog.js";
+import { showDeleteAlert, showNoticeAlert } from "../lib/components/dialog.js";
+
+//TODO: learn obverser model to apply to values changed
+//TODO: Delete a service from the bill + add a service to the bills
 
 document.querySelector("#bills").addEventListener('click', loadPage);
 window.onload = loadPage;
@@ -97,11 +100,13 @@ function handleServiceOptionChanged(billObj){
             //get the service from the service list 
             const service = serviceList.find((service)=>service.id == e.target.value);
             const priceRow = document.querySelector(`#price-${tableServiceId}`);
+            const totalBillText = document.querySelector('#total');
             priceRow.textContent = service.price;
             const totalRow = document.querySelector(`#total-${tableServiceId}`);
             const discountRow = document.querySelector(`#discount-${tableServiceId}`);
             totalRow.textContent = service.price - discountRow.value; 
             billObj.setServiceId(tableServiceId, parseInt(e.target.value));
+            totalBillText.textContent = `$AU ${billObj.getTotal(tempServiceList)}`;
         }
     }
 }
@@ -111,15 +116,23 @@ function handleDiscountChanged(billObj){
     let numberRegex = /^\d+$/;
     for(let i=0;i<discountInputs.length;i++){
         discountInputs[i].onchange = (e) => {
-            //get the id of the bill service
-            const tableServiceId = e.target.id.slice(-1);
-            const priceRow = document.querySelector(`#price-${tableServiceId}`);
-            const totalRow = document.querySelector(`#total-${tableServiceId}`);
-            if(numberRegex.test(e.target.value) && parseInt(e.target.value) <= parseInt(priceRow.textContent)){
-                totalRow.textContent = parseInt(priceRow.textContent) - parseInt(e.target.value);
-                billObj.setServiceDiscount(tableServiceId, parseInt(e.target.value));
+            if(e.target.value != ""){
+                //get the id of the bill service
+                const tableServiceId = e.target.id.slice(-1);
+                const priceRow = document.querySelector(`#price-${tableServiceId}`);
+                const totalRow = document.querySelector(`#total-${tableServiceId}`);
+                const totalBillText = document.querySelector('#total');
+                if(numberRegex.test(e.target.value)){
+                    totalRow.textContent = parseInt(priceRow.textContent) - parseInt(e.target.value);
+                    billObj.setServiceDiscount(tableServiceId, parseInt(e.target.value));
+                    totalBillText.textContent = `$AU ${billObj.getTotal(tempServiceList)}`;
+                } else {
+                    showNoticeAlert("Discount value must be a number", 'failed');
+                    e.target.value = "0";
+                    totalRow.textContent = parseInt(priceRow.textContent) - parseInt(e.target.value);
+                }
             } else {
-                //e.target.value = "Discount must be a number or less than the original price";
+                e.target.value = "0";
             }
         }
     }
@@ -151,7 +164,14 @@ function handleDeleteSingleService(billObj){
     for(let i=0;i<deleteSingleServiceBtns.length;i++){
         deleteSingleServiceBtns[i].onclick = () => {
             servicesListOnBill.splice(deleteSingleServiceBtns[i].id, 1);
-            document.querySelector('#myTable').children[2].innerHTML = getRows(billObj);
+            console.log(servicesListOnBill);
+            document.querySelector('.col-2').innerHTML = generateBillContent(billObj);
+            //build the table
+            new DataTable('#myTable', {
+                paging: false,
+                searching: false,
+                "info": false
+            });
         }
     }
 }
@@ -177,7 +197,7 @@ function generateBillContent(billObj){
             </tbody>
         </table>
         <div class="bill-footer">
-            <span style="margin-left: 20px">Total: <b style="color: #BBA366">$AU ${billObj.getTotal(tempServiceList)}</b> | Status: <b style="color: ${billObj.getStatus() ? "#4C7A6F" : "#C97C82"}">${billObj.getStatus() ? 'Paid' : 'Unpaid'}</b></span>
+            <span style="margin-left: 20px">Total: <b id="total" style="color: #BBA366">$AU ${billObj.getTotal(tempServiceList)}</b> | Status: <b style="color: ${billObj.getStatus() ? "#4C7A6F" : "#C97C82"}">${billObj.getStatus() ? 'Paid' : 'Unpaid'}</b></span>
             <div style="display: flex; margin-right: 20px; margin-bottom: 13px">
                 <button id="check-out-btn" class="square-btn confirm-btn">${billObj.getStatus() ? "Uncheck this bill" : "Check out"}</button>
                 <button id="delete-btn" class="square-btn cancel-btn">Delete</button>
