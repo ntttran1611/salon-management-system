@@ -69,19 +69,24 @@ function handleListItemClicked(id){
     //switch the indicator from white to pink
     activateIndicator(id);
     
+    loadBill(currentBill);
+}
+
+function loadBill(billObj){
     //display bill details
-    document.querySelector('.col-2').innerHTML = generateBillContent(currentBill);
-    setStaffAndServices(currentBill.getBillServices());
+    document.querySelector('.col-2').innerHTML = generateBillContent(billObj);
+    setStaffAndServices(billObj.getBillServices());
 
     //handle values changed
-    handleServiceOptionChanged(currentBill);
-    handleDiscountChanged(currentBill);
-    handleNoteChaged(currentBill);
-    handleStaffChanged(currentBill);
+    handleServiceOptionChanged(billObj);
+    handleDiscountChanged(billObj);
+    handleNoteChaged(billObj);
+    handleStaffChanged(billObj);
 
     //handle buttons clicked
-    handleDeleteSingleService(currentBill);
-    document.querySelector('#check-out-btn').onclick = () => {console.log(currentBill)};
+    handleDeleteSingleService(billObj);
+    handleAddSingleService(billObj);
+    document.querySelector('#check-out-btn').onclick = () => {console.log(billObj)};
 
     //build the table
     new DataTable('#myTable', {
@@ -90,41 +95,45 @@ function handleListItemClicked(id){
         "info": false
     });
 }
-//modify the Price column and the Final Price column when a service on the bill is changed
+
+//modify relevant info when a service on the bill is changed
 function handleServiceOptionChanged(billObj){
     const serviceSelects = document.querySelectorAll('.table-select.service');
-    for(let i=0;i<serviceSelects.length;i++){
-        serviceSelects[i].onchange = (e) => {
+    for(let select of serviceSelects){
+        select.onchange = (e) => {
             //get the id of the bill service
-            const tableServiceId = e.target.id.slice(-1);
+            const serviceIndex = e.target.id.slice(-1);
             //get the service from the service list 
             const service = serviceList.find((service)=>service.id == e.target.value);
-            const priceRow = document.querySelector(`#price-${tableServiceId}`);
+
+            const priceRow = document.querySelector(`#price-${serviceIndex}`);
             const totalBillText = document.querySelector('#total');
+            const totalRow = document.querySelector(`#total-${serviceIndex}`);
+            const discountRow = document.querySelector(`#discount-${serviceIndex}`);
+            
             priceRow.textContent = service.price;
-            const totalRow = document.querySelector(`#total-${tableServiceId}`);
-            const discountRow = document.querySelector(`#discount-${tableServiceId}`);
             totalRow.textContent = service.price - discountRow.value; 
-            billObj.setServiceId(tableServiceId, parseInt(e.target.value));
+            billObj.setServiceId(serviceIndex, parseInt(e.target.value));
             totalBillText.textContent = `$AU ${billObj.getTotal(tempServiceList)}`;
+
         }
     }
 }
-//modify the Final Price column when discount is changed
+//modify relevant info when discount is changed
 function handleDiscountChanged(billObj){
     const discountInputs = document.querySelectorAll('.table-input.discount');
     let numberRegex = /^\d+$/;
-    for(let i=0;i<discountInputs.length;i++){
-        discountInputs[i].onchange = (e) => {
+    for(let discountInput of discountInputs){
+        discountInput.onchange = (e) => {
             if(e.target.value != ""){
                 //get the id of the bill service
-                const tableServiceId = e.target.id.slice(-1);
-                const priceRow = document.querySelector(`#price-${tableServiceId}`);
-                const totalRow = document.querySelector(`#total-${tableServiceId}`);
+                const serviceIndex = e.target.id.slice(-1);
+                const priceRow = document.querySelector(`#price-${serviceIndex}`);
+                const totalRow = document.querySelector(`#total-${serviceIndex}`);
                 const totalBillText = document.querySelector('#total');
                 if(numberRegex.test(e.target.value)){
                     totalRow.textContent = parseInt(priceRow.textContent) - parseInt(e.target.value);
-                    billObj.setServiceDiscount(tableServiceId, parseInt(e.target.value));
+                    billObj.setServiceDiscount(serviceIndex, parseInt(e.target.value));
                     totalBillText.textContent = `$AU ${billObj.getTotal(tempServiceList)}`;
                 } else {
                     showNoticeAlert("Discount value must be a number", 'failed');
@@ -140,39 +149,46 @@ function handleDiscountChanged(billObj){
 
 function handleStaffChanged(billObj){
     const staffSelects = document.querySelectorAll('.table-select.staff');
-    for(let i=0;i<staffSelects.length;i++){
-        staffSelects[i].onchange = (e) => {
-            const tableServiceId = e.target.id.slice(-1);
-            billObj.setServiceStaff(tableServiceId, parseInt(e.target.value));
+    for(let staffSelect of staffSelects){
+        staffSelect.onchange = (e) => {
+            const serviceIndex = e.target.id.slice(-1);
+            billObj.setServiceStaff(serviceIndex, parseInt(e.target.value));
         }
     }
 }
 
 function handleNoteChaged(billObj){
     const noteInputs = document.querySelectorAll('.table-input.note');
-    for(let i=0;i<noteInputs.length;i++){
-        noteInputs[i].onchange = (e) => {
-            const tableServiceId = e.target.id.slice(-1);
-            billObj.setServiceNote(tableServiceId, parseInt(e.target.value));
+    for(let noteInput of noteInputs){
+        noteInput.onchange = (e) => {
+            const serviceIndex = e.target.id.slice(-1);
+            billObj.setServiceNote(serviceIndex, parseInt(e.target.value));
         }
     }
 }
-//TODO-Up to this point - deleting a service on the bill
+//Deleting a service on the bill
 function handleDeleteSingleService(billObj){
     const deleteSingleServiceBtns = document.querySelectorAll('.delete-table-btn');
-    const servicesListOnBill = billObj.getBillServices();
-    for(let i=0;i<deleteSingleServiceBtns.length;i++){
-        deleteSingleServiceBtns[i].onclick = () => {
-            servicesListOnBill.splice(deleteSingleServiceBtns[i].id, 1);
-            console.log(servicesListOnBill);
-            document.querySelector('.col-2').innerHTML = generateBillContent(billObj);
-            //build the table
-            new DataTable('#myTable', {
-                paging: false,
-                searching: false,
-                "info": false
-            });
+    for(let btn of deleteSingleServiceBtns){
+        btn.onclick = () => {
+            billObj.deleteService(btn.id);
+            loadBill(billObj);
         }
+    }
+}
+
+//Adding a service to the bill
+function handleAddSingleService(billObj){
+    const addingBtn = document.querySelector('.add-table-btn');
+    addingBtn.onclick = () => {
+        let addingIndex = billObj.getServicesCount();
+        let serviceId = parseInt(document.querySelector(`#service-${addingIndex}`).value);
+        let staffId = parseInt(document.querySelector(`#staff-${addingIndex}`).value);
+        let discount = document.querySelector(`#discount-${addingIndex}`).value == '' ? 0 : parseInt(document.querySelector(`#discount-${addingIndex}`).value);
+        let note = document.querySelector(`#note-${addingIndex}`).value;
+
+        billObj.addService(serviceId, staffId, discount, note);
+        loadBill(billObj);
     }
 }
 
@@ -208,46 +224,51 @@ function generateBillContent(billObj){
 
 //get row content for the service table
 function getRows(billObj){
+    let rowContent = "";
     const serviceOptions = tempServiceList.map((service)=>{
         return `<option value=${service.id}>${service.title}</option>`
     }).join('');
     const staffOptions = tempStaffList.map((staff)=>{
         return `<option value=${staff.id}>${staff.firstName} ${staff.lastName}</option>`
     }).join('');
-    let rowContent = billObj.getBillServices().map((item) => {
-        const service = serviceList.find((service)=>service.id == item.serviceId);
-        return `<tr>
-            <td><select id="service-${item.id}" class="table-select service" ${billObj.getStatus() ? "disabled" : ''}>${serviceOptions}</select></td>
-            <td id="price-${item.id}">${service.price}</td>
-            <td><select id="staff-${item.id}" class="table-select staff" ${billObj.getStatus() ? "disabled" : ''}>${staffOptions}</select></td>
-            <td><input class="table-input discount" type="text" name="bill-discount" id="discount-${item.id}" value='${item.discount == 0 ? "0" : item.discount}' placeholder="0" ${billObj.getStatus() ? "disabled" : ''}></td>
-            <td id="total-${item.id}">${parseInt(service.price) - parseInt(item.discount)}</td>
-            <td><input class="table-input note" type="text" name="bill-note" id="note-${item.id}" value='${item.note == "" ? "" : item.note}' placeholder="Enter something to describe this bill" ${billObj.getStatus() ? "disabled" : ''}></td>
+    
+    const billServices = billObj.getBillServices();
+    for(let i=0; i<billServices.length; i++){
+        const service = serviceList.find((service)=>service.id == billServices[i].serviceId);
+        rowContent += `<tr>
+            <td><select id="service-${i}" class="table-select service" ${billObj.getStatus() ? "disabled" : ''}>${serviceOptions}</select></td>
+            <td id="price-${i}">${service.price}</td>
+            <td><select id="staff-${i}" class="table-select staff" ${billObj.getStatus() ? "disabled" : ''}>${staffOptions}</select></td>
+            <td><input class="table-input discount" type="text" name="bill-discount" id="discount-${i}" value='${billServices[i].discount == 0 ? "0" : billServices[i].discount}' placeholder="0" ${billObj.getStatus() ? "disabled" : ''}></td>
+            <td id="total-${i}">${parseInt(service.price) - parseInt(billServices[i].discount)}</td>
+            <td><input class="table-input note" type="text" name="bill-note" id="note-${i}" value='${billServices[i].note == "" ? "" : billServices[i].note}' placeholder="Enter something to describe this bill" ${billObj.getStatus() ? "disabled" : ''}></td>
             <td>
-                <button id="${item.id}" class="round-btn delete-table-btn">
+                <button id="${i}" class="round-btn delete-table-btn " ${billObj.getStatus() ? "disabled" : ''}>
                     <i class="fa-solid fa-trash fa-xs"></i> 
                     <span class="tooltiptext">Delete</span>
                 </button> 
             </td>
-        </tr>`
-    }).join('');
+        </tr>`;
+    }
+
     if(!billObj.getStatus())
     {
         rowContent += `<tr>
-            <td><select class="table-select service inactive">${serviceOptions}</select></td>
-            <td class="inactive">0</td>
-            <td><select class="table-select staff inactive">${staffOptions}</select></td>
-            <td><input class="table-input inactive" type="text" name="bill-discount" value="" placeholder="0"></td>
-            <td class="inactive">0</td>
-            <td><input class="table-input inactive" type="text" name="bill-note" id="bill-note" value="" placeholder="Enter something to describe this bill"></td>
+            <td><select id="service-${billObj.getServicesCount()}" class="table-select service inactive">${serviceOptions}</select></td>
+            <td id="price-${billObj.getServicesCount()}" class="inactive">0</td>
+            <td><select id="staff-${billObj.getServicesCount()}" class="table-select staff inactive">${staffOptions}</select></td>
+            <td><input class="table-input discount inactive" type="text" name="bill-discount" id="discount-${billObj.getServicesCount()}" value="" placeholder="0"></td>
+            <td id="total-${billObj.getServicesCount()}" class="inactive">0</td>
+            <td><input class="table-input note inactive" type="text" name="bill-note" id="note-${billObj.getServicesCount()}" value="" placeholder="Enter something to describe this bill"></td>
             <td>
-                <button class="round-btn sm add-table-btn">
+                <button id="add-service" class="round-btn sm add-table-btn">
                     <i class="fa-solid fa-plus fa-xs"></i>
                     <span class="tooltiptext">Add new</span> 
                 </button> 
             </td>
         </tr>`;
     }
+
     return rowContent;
 }
 
@@ -269,8 +290,7 @@ function setStaffAndServices(services){
     const serviceSelects = document.querySelectorAll('.table-select.service');
     const staffSelects = document.querySelectorAll('.table-select.staff');
     for(let i=0;i<services.length;i++){
-        const billServices = services;
-        serviceSelects[i].value = billServices[i].serviceId;
-        staffSelects[i].value = billServices[i].staffId == -1 ? 1 : billServices[i].staffId;
+        serviceSelects[i].value = services[i].serviceId;
+        staffSelects[i].value = services[i].staffId == -1 ? 1 : services[i].staffId;
     }
 }
