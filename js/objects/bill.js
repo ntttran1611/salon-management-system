@@ -25,32 +25,31 @@ export class Bill{
     }
 
     display(){
-        console.log(this.#id);
+        console.log(this.#services);
     }
 
-    setSingleService(serviceIdOnBill, newService){
-        const modifiedService = this.#services.find((item) => item.id == serviceIdOnBill);
-        modifiedService = newService;
+    setServiceId(serviceIndex, serviceId){
+        const modifiedService = this.#services[serviceIndex];
+        modifiedService != undefined ? modifiedService.serviceId = serviceId : "";
     }
 
-    setServiceId(serviceIdOnBill, serviceId){
-        const modifiedService = this.#services.find((item) => item.id == serviceIdOnBill);
-        modifiedService.serviceId = serviceId;
+    setServiceStaff(serviceIndex, staffId){
+        const modifiedService = this.#services[serviceIndex];
+        modifiedService != undefined ? modifiedService.staffId = staffId : "";
     }
 
-    setServiceStaff(serviceIdOnBill, staffId){
-        const modifiedService = this.#services.find((item) => item.id == serviceIdOnBill);
-        modifiedService.staffId = staffId;
+    setServiceDiscount(serviceIndex, discount){
+        const modifiedService = this.#services[serviceIndex];
+        modifiedService != undefined ? modifiedService.discount = discount : "";
     }
 
-    setServiceDiscount(serviceIdOnBill, discount){
-        const modifiedService = this.#services.find((item) => item.id == serviceIdOnBill);
-        modifiedService.discount = discount;
+    setServiceNote(serviceIndex, note){
+        const modifiedService = this.#services[serviceIndex];
+        modifiedService != undefined ? modifiedService.note = note : "";
     }
 
-    setServiceNote(serviceIdOnBill, note){
-        const modifiedService = this.#services.find((item) => item.id == serviceIdOnBill);
-        modifiedService.note = note;
+    getServicesCount(){
+        return this.#services.length;
     }
 
     getTotal(serviceList){
@@ -89,5 +88,21 @@ export class Bill{
 
     getEntranceTime(){
         return this.#entranceTime;
+    }
+
+    deleteService(index){
+        this.#services.splice(index, 1);
+    }
+
+    addService(serviceId, staffId, discount, note){
+        const newService = {
+            id: 99,
+            discount: discount,
+            serviceId: serviceId,
+            staffId: staffId,
+            note: note
+        };
+
+        this.#services.push(newService);
     }
 }
