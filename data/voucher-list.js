@@ -14,7 +14,7 @@ export const Vouchers = [
         id: 2,
         code: 'SWEETIES-002',
         buyerName: 'Ivy Tran',
-        price: 70,
+        price: 100,
         dateOfIssue: '2020-08-03',
         expiry: '2023-08-03',
         note: '',
