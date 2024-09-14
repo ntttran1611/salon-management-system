@@ -25,10 +25,20 @@ body {
 
 /* MODAL */
 dialog {
+    overflow-y: scroll;
     padding: 0;
     padding-bottom: 20px;
     border: none;
     border-radius: 10px;
+    -ms-overflow-style: none;
+        /* Internet Explorer 10+ */
+        scrollbar-width: none;
+        /* Firefox */
+}
+
+dialog::-webkit-scrollbar {
+    display: none;
+    /* Safari and Chrome */
 }
 
 dialog[open] {
@@ -62,6 +72,10 @@ h2.failed {
 
 h2.successful {
     background-color: var(--dark-green);
+}
+
+h2.check-out {
+    background-color: var(--primary);
 }
 
 .stress-span {
@@ -538,12 +552,15 @@ table.dataTable thead th {
     height: calc(100% - 100px);
     display: flex;
     flex-direction: column;
-    justify-content: space-evenly;
     overflow-y: scroll;
     -ms-overflow-style: none;
         /* Internet Explorer 10+ */
         scrollbar-width: none;
         /* Firefox */
+}
+
+.vertical-list.check-out{
+    height: 100px;
 }
 
 .vertical-list::-webkit-scrollbar {

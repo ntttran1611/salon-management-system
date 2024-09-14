@@ -6,7 +6,7 @@ export class Bill{
     #entranceDate;
     #entranceTime;
     #branchId;
-    #voucherId;
+    #voucherCode;
     #payment;
     #paid;
 
@@ -19,7 +19,7 @@ export class Bill{
         this.#entranceDate = billObject.entranceDate;
         this.#entranceTime = billObject.entranceTime;
         this.#branchId = billObject.branchId;
-        this.#voucherId = billObject.voucherId;
+        this.#voucherCode = billObject.voucherCode;
         this.#payment = billObject.payment; 
         this.#paid = billObject.paid;
     }
@@ -48,6 +48,18 @@ export class Bill{
         modifiedService != undefined ? modifiedService.note = note : "";
     }
 
+    setVoucherCode(voucherCode){
+        this.#voucherCode = voucherCode;
+    }
+
+    checkOut(){
+        this.#paid = true;
+    }
+
+    uncheck(){
+        this.#paid = false;
+    }
+
     getServicesCount(){
         return this.#services.length;
     }
@@ -60,6 +72,14 @@ export class Bill{
             total += finalPrice;
         });
         return total;
+    }
+
+    getAllDiscount(){
+        let totalDiscount = 0;
+        this.#services.forEach((service)=>{
+            totalDiscount += service.discount;
+        });
+        return totalDiscount;
     }
 
     getBillServices(){
@@ -88,6 +108,10 @@ export class Bill{
 
     getEntranceTime(){
         return this.#entranceTime;
+    }
+
+    getVoucherCode(){
+        return this.#voucherCode;
     }
 
     deleteService(index){

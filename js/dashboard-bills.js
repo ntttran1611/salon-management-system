@@ -3,7 +3,8 @@ import { Branches } from "../data/branch-list.js";
 import { serviceList } from "../data/service-list.js";
 import { Staff } from "../data/staff-list.js";
 import { Bill } from "./objects/bill.js";
-import { showDeleteAlert, showNoticeAlert } from "../lib/components/dialog.js";
+import { Vouchers } from "../data/voucher-list.js";
+import { showDeleteAlert, showNoticeAlert, showCheckOutBoard } from "../lib/components/dialog.js";
 
 //TODO: learn obverser model to apply to values changed
 //TODO: Delete a service from the bill + add a service to the bills
@@ -15,6 +16,7 @@ const tempBillsList = Bills; //must be filtered by branches
 const tempBrancheslist = Branches;
 const tempServiceList = serviceList;
 const tempStaffList = Staff;
+const tempVouchersList = Vouchers;
 
 //display all bills and the first bill when the page is load
 function loadPage(){
@@ -52,7 +54,7 @@ function getBillList(){
     if(tempBillsList.length == 0){
        return `<p class="note-lg">No bill recorded</>`;
     } else {
-        return `<div class="vertical-list">${tempBillsList.map((bill) => {
+        return `<div class="vertical-list" style="justify-content: space-evenly;">${tempBillsList.map((bill) => {
             return `<div id=${bill.id} class="list-item ${bill.paid ? `checked` : ''}">
                         <div class="choose-indicator"></div>
                         <div class="list-item-content" id=${bill.id}>${bill.id} - ${bill.cusName}</div>
@@ -86,7 +88,10 @@ function loadBill(billObj){
     //handle buttons clicked
     handleDeleteSingleService(billObj);
     handleAddSingleService(billObj);
-    document.querySelector('#check-out-btn').onclick = () => {console.log(billObj)};
+    document.querySelector('#check-out-btn').onclick = () => {
+        console.log(billObj);
+        showCheckOutBoard(billObj, tempServiceList, tempVouchersList);
+    };
 
     //build the table
     new DataTable('#myTable', {

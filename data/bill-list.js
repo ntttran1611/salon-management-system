@@ -22,7 +22,7 @@ export const Bills = [
         entranceDate: '08/08/2024',
         entranceTime: '13:15',
         branchId: 1,
-        voucherId: 0,
+        voucherCode: "sweeties-001",
         total: 0,
         payment: {
             type: 'card',
@@ -54,7 +54,7 @@ export const Bills = [
         entranceDate: '08/08/2024',
         entranceTime: '11:08',
         branchId: 1,
-        voucherId: 0,
+        voucherCode: "",
         total: 0,
         payment: {
             type: 'card',
@@ -79,7 +79,7 @@ export const Bills = [
         entranceDate: '08/08/2024',
         entranceTime: '09:45',
         branchId: 1,
-        voucherId: 0,
+        voucherCode: "",
         total: 0,
         payment: {
             type: 'card',
@@ -104,7 +104,7 @@ export const Bills = [
         entranceDate: '08/08/2024',
         entranceTime: '12:34',
         branchId: 1,
-        voucherId: 0,
+        voucherCode: "",
         total: 0,
         payment: {
             type: 'card',
@@ -136,7 +136,7 @@ export const Bills = [
         entranceDate: '08/08/2024',
         entranceTime: '15:11',
         branchId: 1,
-        voucherId: 0,
+        voucherCode: "",
         total: 0,
         payment: {
             type: 'split',
@@ -168,7 +168,7 @@ export const Bills = [
         entranceDate: '08/08/2024',
         entranceTime: '14:27',
         branchId: 1,
-        voucherId: 0,
+        voucherCode: "",
         total: 0,
         payment: {
             type: 'cash',
@@ -200,7 +200,7 @@ export const Bills = [
         entranceDate: '08/08/2024',
         entranceTime: '11:24',
         branchId: 1,
-        voucherId: 0,
+        voucherCode: "",
         total: 0,
         payment: {
             type: 'cash',
@@ -232,7 +232,7 @@ export const Bills = [
         entranceDate: '08/08/2024',
         entranceTime: '16:08',
         branchId: 1,
-        voucherId: 0,
+        voucherCode: "",
         total: 0,
         payment: {
             type: 'cash',
