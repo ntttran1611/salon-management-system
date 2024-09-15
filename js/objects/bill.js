@@ -52,6 +52,25 @@ export class Bill{
         this.#voucherCode = voucherCode;
     }
 
+    setPaymentType(paymentType){
+        this.#payment.type = paymentType;
+    }
+
+    setPaymentAmount(finalTotal, splitCardAmount){
+        switch (this.#payment.type){
+            case 'card': this.#payment.cardAmount = finalTotal;
+                         this.#payment.cashAmount = 0;
+            break;
+            case 'cash': this.#payment.cashAmount = finalTotal;
+                         this.#payment.cardAmount = 0;
+            break;
+            case 'split': this.#payment.cardAmount = splitCardAmount;
+                          this.#payment.cashAmount = finalTotal - splitCardAmount;
+            break;
+            default: "";
+        }
+    }
+
     checkOut(){
         this.#paid = true;
     }
@@ -112,6 +131,10 @@ export class Bill{
 
     getVoucherCode(){
         return this.#voucherCode;
+    }
+
+    getPayment(){
+        return this.#payment;
     }
 
     deleteService(index){
