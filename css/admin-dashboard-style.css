@@ -155,7 +155,7 @@ button i {
     border-bottom-left-radius: 10px;
 }
 
-#modal-delete-btn, #delete-btn {
+#modal-delete-btn {
     background-color: var(--warning);
 }
 
