@@ -2,12 +2,9 @@ import { Bills } from "../data/bill-list.js";
 import { Branches } from "../data/branch-list.js";
 import { serviceList } from "../data/service-list.js";
 import { Staff } from "../data/staff-list.js";
-import { Bill } from "./objects/bill.js";
+import { Bill } from "../lib/objects/bill.js";
 import { Vouchers } from "../data/voucher-list.js";
 import { showDeleteAlert, showNoticeAlert, showCheckOutDialog } from "../lib/components/dialog.js";
-
-//TODO: learn obverser model to apply to values changed
-//TODO: Delete a service from the bill + add a service to the bills
 
 document.querySelector("#bills").addEventListener('click', loadPage);
 window.onload = loadPage;
