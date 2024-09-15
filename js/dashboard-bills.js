@@ -4,7 +4,7 @@ import { serviceList } from "../data/service-list.js";
 import { Staff } from "../data/staff-list.js";
 import { Bill } from "./objects/bill.js";
 import { Vouchers } from "../data/voucher-list.js";
-import { showDeleteAlert, showNoticeAlert, showCheckOutBoard } from "../lib/components/dialog.js";
+import { showDeleteAlert, showNoticeAlert, showCheckOutDialog } from "../lib/components/dialog.js";
 
 //TODO: learn obverser model to apply to values changed
 //TODO: Delete a service from the bill + add a service to the bills
@@ -90,7 +90,7 @@ function loadBill(billObj){
     handleAddSingleService(billObj);
     document.querySelector('#check-out-btn').onclick = () => {
         console.log(billObj);
-        showCheckOutBoard(billObj, tempServiceList, tempVouchersList);
+        showCheckOutDialog(billObj, tempServiceList, tempVouchersList);
     };
 
     //build the table
@@ -218,7 +218,7 @@ function generateBillContent(billObj){
             </tbody>
         </table>
         <div class="bill-footer">
-            <span style="margin-left: 20px">Total: <b id="total" style="color: #BBA366">$AU ${billObj.getTotal(tempServiceList)}</b> | Status: <b style="color: ${billObj.getStatus() ? "#4C7A6F" : "#C97C82"}">${billObj.getStatus() ? 'Paid' : 'Unpaid'}</b></span>
+            <span style="margin-left: 20px">Sub total: <b id="total" style="color: #BBA366">$AU ${billObj.getTotal(tempServiceList)}</b> | Status: <b style="color: ${billObj.getStatus() ? "#4C7A6F" : "#C97C82"}">${billObj.getStatus() ? 'Paid' : 'Unpaid'}</b></span>
             <div style="display: flex; margin-right: 20px; margin-bottom: 13px">
                 <button id="check-out-btn" class="square-btn confirm-btn">${billObj.getStatus() ? "Uncheck this bill" : "Check out"}</button>
                 <button id="delete-btn" class="square-btn cancel-btn">Delete</button>

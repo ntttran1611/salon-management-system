@@ -212,6 +212,12 @@ button i {
     color: white;
 }
 
+.toggle-btn.payment-chosen{
+    background-color: var(--confirm);
+    color: white;
+    border-radius: 4px;
+}
+
 /* TOOLTIP TEXT */
 .tooltiptext {
     visibility: hidden;
