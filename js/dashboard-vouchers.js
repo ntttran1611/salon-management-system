@@ -173,7 +173,7 @@ function handleViewAddButtonsClicked(id){
         //get final objects for submitting to db
         const checkInstance = cloneVoucherObj.clone();
         checkInstance.setBuyerName(document.querySelector('#voucher-buyer').value);
-        checkInstance.setPrice(document.querySelector('#voucher-price').value);
+        checkInstance.setPrice(parseFloat(document.querySelector('#voucher-price').value));
         checkInstance.setIssueDate(document.querySelector('#voucher-issue-date').value);
         checkInstance.setExpiryDate(document.querySelector('#voucher-expiry').value);
         checkInstance.setMobile(document.querySelector('#voucher-mobile').value);
@@ -214,7 +214,7 @@ function getInputContent(voucherObj, isEditing){
     //add content to the form inputs/selects if editing a voucher
     //if adding, leave the inputs blank
     let tabContent = `
-            <h2> ${isEditing ? `Voucher ${voucherObj.getCode()}` : `Adding a new voucher` }</h2>
+            <h2> ${isEditing ? `Voucher #${voucherObj.getCode()}` : `Adding a new voucher` }</h2>
             <div class="main-func-btns">
                 ${isEditing ? `<button id="edit-btn" class="round-btn edit-btn">
                     <i class="fa-solid fa-pen-to-square fa-lg"></i>
@@ -323,6 +323,11 @@ function checkInputs(voucherObj){
 function addEditVoucher(voucher){
     //showNoticeAlert(`The item named ${voucher.code} has been added/edited.`, 'successful');
     console.log(voucher);
+}
+
+//delete a voucher
+function deleteVoucher(voucher){
+    
 }
 
 

@@ -130,6 +130,10 @@ button i {
     color: white;
 }
 
+#voucher-delete{
+    color: var(--warning);
+}
+
 .add-btn {
     position: absolute;
     bottom: 20px;
@@ -155,7 +159,7 @@ button i {
     border-bottom-left-radius: 10px;
 }
 
-#modal-delete-btn {
+#modal-delete-btn, #bill-delete-btn{
     background-color: var(--warning);
 }
 

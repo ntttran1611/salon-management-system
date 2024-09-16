@@ -25,7 +25,7 @@ export const Bills = [
         voucherCode: "sweeties-001",
         total: 0,
         payment: {
-            type: 'card',
+            type: 'cash',
             cardAmount: 0,
             cashAmount: 0,
         },
@@ -57,7 +57,7 @@ export const Bills = [
         voucherCode: "",
         total: 0,
         payment: {
-            type: 'card',
+            type: 'cash',
             cardAmount: 0,
             cashAmount: 0,
         },
@@ -107,7 +107,7 @@ export const Bills = [
         voucherCode: "",
         total: 0,
         payment: {
-            type: 'card',
+            type: 'split',
             cardAmount: 0,
             cashAmount: 0,
         },
