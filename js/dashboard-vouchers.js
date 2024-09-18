@@ -75,7 +75,7 @@ function getTableRows(){
     let tableRowData = tempVouchersList.map((voucherObj) => {
         return `<tr>
             <td>
-                ${addStatusIcon(voucherObj.getStatus())}
+                <i class="fa-solid fa-circle status ${voucherObj.getStatus()}"></i>
             </td>
             <td>${voucherObj.getCode()}</td>
             <td>${voucherObj.getBuyerName()}</td>
@@ -91,16 +91,6 @@ function getTableRows(){
     }).join('');
 
     return tableRowData;
-}
-//generate icons indicating the vouchers' status
-function addStatusIcon(status){
-    switch (status){
-        case 'active': return `<i class="fa-solid fa-circle status active"></i>`;
-        case 'inactive': return `<i class="fa-solid fa-circle status inactive"></i>`;
-        case 'permaInactive': return `<i class="fa-solid fa-circle status inactive"></i>`;
-        case 'warning': return `<i class="fa-solid fa-circle status warning"></i>`;
-        default: return null;
-    }
 }
 
 //show input tab when view/add buttons are hit
@@ -252,8 +242,8 @@ function getInputContent(voucherObj, isEditing){
                 </div>
                 <div class="double-inputs">
                     <div class='toggle-container'>
-                        <label class="form-label" for="voucher-status">Status:</label><br>
-                        <div class="toggle" name="voucher-status">
+                        <label class="form-label">Status:</label><br>
+                        <div class="toggle">
                             <div class="toggle-btn active" id="toggle-active">Valid</div>
                             <div class="toggle-btn" id="toggle-inactive">Used</div>
                             <div class="toggle-btn" id="toggle-warning">Expired</div>
