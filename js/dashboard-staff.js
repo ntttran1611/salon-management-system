@@ -1,4 +1,5 @@
-import { Staff } from "../data/staff-list.js";
+import { StaffList } from "../data/staff-list.js";
+import { Staff } from "../lib/objects/staff.js";
 import { closeManagingTab, 
         enableFormEditing, disableFormEditing,
         enableInputs, disableInputs,
@@ -7,9 +8,8 @@ import { closeManagingTab,
  } from "../lib/functions/shared.js";
 import { showDeleteAlert, showNoticeAlert } from "../lib/components/dialog.js";
 
-
 //get all staff from DB **SHOULE BE PER PAGE**
-const tempStaffList = Staff;
+const tempStaffList = Staff.getStaffObjList(StaffList);
 
 document.querySelector('#staff').addEventListener('click', loadPage);
 //display staff list when the corresponding tab link is being chosen
@@ -47,8 +47,8 @@ function loadPage(){
         //Add interactions to functional buttons
         //VIEW BUTTON - view a voucher
         const viewButtons = document.querySelectorAll('.view-btn');
-        for (let i = 0; i < tempStaffList.length; i++){
-            viewButtons[i].onclick = () => handleViewAddButtonsClicked(i + 1);
+        for (let viewBtn of viewButtons){
+            viewBtn.onclick = () => handleViewAddButtonsClicked(viewBtn.id);
         }
 
         //ADD BUTTON - add a new voucher
@@ -68,15 +68,15 @@ function loadPage(){
 }
 //add data to table rows
 function getTableRows(){
-    let tableRowData = tempStaffList.map((staff) => {
+    let tableRowData = tempStaffList.map((staffObj) => {
         return `<tr>
             <td>
-                ${addStatusIcon(staff.active)}
+                <i class="fa-solid fa-circle status ${staffObj.getStatus()}"></i>
             </td>
-            <td>${staff.id}</td>
-            <td>${staff.firstName} ${staff.lastName}</td>
+            <td>${staffObj.getId()}</td>
+            <td>${staffObj.getFirstName()} ${staffObj.getLastName()}</td>
             <td>
-                <button id="${staff.id}" class="round-btn view-btn">
+                <button id="${staffObj.getId()}" class="round-btn view-btn">
                     <i class="fa-regular fa-eye fa-sm"></i> 
                     <span class="tooltiptext">View/Edit</span>
                 </button> 
@@ -86,34 +86,17 @@ function getTableRows(){
 
     return tableRowData;
 }
-//generate icons indicating the vouchers' status
-function addStatusIcon(status){
-    switch (status){
-        case true: return `<i class="fa-solid fa-circle status active"></i>`;
-        case false: return `<i class="fa-solid fa-circle status inactive"></i>`;
-        default: return null;
-    }
-}
 
 //show input tab when view/add buttons are hit
 function handleViewAddButtonsClicked(id){
     //search for the chosen staff using its id
-    const chosenStaff = tempStaffList.filter((staff) => staff.id == id);
-    const isEditing = chosenStaff.length > 0; //check if the action is 'adding' or 'editing'
-    
-    //instance of the branch/new branch to be managed
-    let managedStaff = isEditing ? chosenStaff[0] : {
-        id: '',
-        firstName: '',
-        lastName: '',
-        active: true,
-        note: '',
-    };
-    let initialStatus = managedStaff.used;
+    const chosenStaff = tempStaffList.find((staff) => staff.getId() == id);
+    const isEditing = chosenStaff != undefined; //check if the action is 'adding' or 'editing'
+    let cloneStaffObj = isEditing ? chosenStaff : new Staff(undefined);
 
     //add content to input elements
     const col2 = document.querySelector('.col-2');
-    col2.innerHTML = getInputContent(managedStaff, isEditing);
+    col2.innerHTML = getInputContent(cloneStaffObj, isEditing);
 
     //set height to col-2 for animations
     col2.style.height = col2.scrollHeight + 'px';
@@ -125,28 +108,29 @@ function handleViewAddButtonsClicked(id){
     const cancelBtn = document.querySelector('#cancel-btn');
 
     //Set voucher status
-    setStaffStatus(managedStaff);
+    setStaffStatus(cloneStaffObj);
     
     if(isEditing){
+        let initialStatus = cloneStaffObj.getStatus();
         //Add function to EDIT BUTTON
         document.querySelector('#edit-btn').onclick = () => enableForm();
 
         //disable editing if editing a staff member
         cancelBtn.onclick = () => {
             //set all values back to the initial values
-            document.querySelector('#staff-firstName').value = managedStaff.firstName;
-            document.querySelector('#staff-lastName').value = managedStaff.lastName;
-            document.querySelector('#staff-note').value = managedStaff.note;
-            managedStaff.used = initialStatus;
-            setStaffStatus(managedStaff);
+            document.querySelector('#staff-firstName').value = cloneStaffObj.getFirstName();
+            document.querySelector('#staff-lastName').value = cloneStaffObj.getLastName();
+            document.querySelector('#staff-note').value = cloneStaffObj.getNote();
+            cloneStaffObj.used = initialStatus;
+            setStaffStatus(cloneStaffObj);
             disableForm(); //disable inputs
         };
 
         //DELETE BUTTON
-        document.querySelector('#delete-btn').onclick = () => showDeleteAlert(chosenStaff[0].id, `${chosenStaff[0].firstName} ${chosenStaff[0].lastName}`);
+        document.querySelector('#delete-btn').onclick = () => showDeleteAlert(cloneStaffObj.getId(), `${cloneStaffObj.getFirstName()} ${cloneStaffObj.getLastName()}`);
     
         //STATUS TOGGLE
-        document.querySelector('.toggle').onclick = (evt) => handledToggleValueChanged(evt, managedStaff);
+        document.querySelector('.toggle').onclick = (evt) => handledToggleValueChanged(evt, cloneStaffObj);
     } else {
         //get all inputs ready
         enableForm();
@@ -158,23 +142,23 @@ function handleViewAddButtonsClicked(id){
     //Add function to CONFIRM BUTTON
     document.querySelector('#confirm-btn').onclick = () => {
         //get final objects for submitting to db
-        let checkStaff = {...managedStaff};
-        checkStaff.firstName = document.querySelector('#staff-firstName').value;
-        checkStaff.lastName = document.querySelector('#staff-lastName').value;
-        checkStaff.note = document.querySelector('#staff-note').value;
+        let checkStaff = cloneStaffObj.clone();
+        checkStaff.setFirstName(document.querySelector('#staff-firstName').value)
+        checkStaff.setLastName(document.querySelector('#staff-lastName').value);
+        checkStaff.setNote(document.querySelector('#staff-note').value)
         if(checkInputs(checkStaff)){
-            managedStaff = checkStaff;
-            addEditItem(managedStaff);
+            cloneStaffObj = checkStaff;
+            addEditItem(cloneStaffObj);
         }
     };
 }
 
 //get input content
-function getInputContent(staff, action){
+function getInputContent(staffObj, action){
     //add content to the form inputs/selects if editing a staff
     //if adding, leave the inputs blank
     let tabContent = `
-            <h2> ${action > 0 ? `Staff #${staff.id} - ${staff.firstName} ${staff.lastName}` : `Adding a new staff` }</h2>
+            <h2> ${action ? `Staff #${staffObj.getId()} - ${staffObj.getFirstName()} ${staffObj.getLastName()}` : `Adding a new staff` }</h2>
             <div class="main-func-btns">
                 ${action ? `<button id="edit-btn" class="round-btn edit-btn">
                     <i class="fa-solid fa-pen-to-square fa-lg"></i>
@@ -193,11 +177,11 @@ function getInputContent(staff, action){
                 <div class="double-inputs">
                     <div class="text-input-container half">
                         <label class="form-label" for='staff-firstName'>First name:</label><br>
-                        <input class="form-input" maxlength=20 type="text" id="staff-firstName" name="staff-firstName" disabled required value='${staff.firstName}'>
+                        <input class="form-input" maxlength=20 type="text" id="staff-firstName" name="staff-firstName" disabled required value='${staffObj.getFirstName()}'>
                     </div>
                     <div class="text-input-container half">
                         <label class="form-label" for='staff-lastName'>Last name:</label><br>
-                        <input class="form-input" maxlength=5 type="text" id="staff-lastName" name="staff-lastName" disabled required value='${staff.lastName}'>
+                        <input class="form-input" maxlength=20 type="text" id="staff-lastName" name="staff-lastName" disabled required value='${staffObj.getLastName()}'>
                     </div>
                 </div>
                 <div class="double-inputs">
@@ -210,7 +194,7 @@ function getInputContent(staff, action){
                     </div>
                     <div class="text-input-container half">
                         <label class="form-label" for='staff-note'>Note:</label><br>
-                        <input class="form-input" maxlength=10 type="text" id="staff-note" name="staff-note" disabled required value='${staff.note}'>
+                        <input class="form-input" maxlength=10 type="text" id="staff-note" name="staff-note" disabled required value='${staffObj.getNote()}'>
                     </div>
                 </div>
                 <div class="confirm-btns">
@@ -223,25 +207,24 @@ function getInputContent(staff, action){
 }
 
 //add staff status to the form
-function setStaffStatus(staff){
+function setStaffStatus(staffObj){
     const toggle = document.querySelector('.toggle');
     for(let i=0; i<toggle.children.length; i++){
         toggle.children[i].className = "toggle-btn";
     }
-    let status = staff.active ? 'active' : 'inactive';
-    document.querySelector(`#toggle-${status}`).className += ' active';
+    document.querySelector(`#toggle-${staffObj.getStatus()}`).className += ' active';
 }
 
 //handle toggle's value changed
-function handledToggleValueChanged(evt, staff){
+function handledToggleValueChanged(evt, staffObj){
     const toggle = document.querySelector(".toggle");
     if(toggle.className.includes('enabled')){
         if(evt.target.id == "toggle-active"){
-            staff.active = true;
+            staffObj.setStatus('active');
         } else if (evt.target.id == 'toggle-inactive') {
-            staff.active = false;
+            staffObj.setStatus('inactive');
         }
-        setStaffStatus(staff);
+        setStaffStatus(staffObj);
     }
 }
 
@@ -264,8 +247,8 @@ function disableForm(){
 //API
 //
 //check validity of inputs
-function checkInputs(item){
-    if(item.firstName == ''){
+function checkInputs(staffObj){
+    if(staffObj.getFirstName() == ''){
         showNoticeAlert('Staff first name required.', 'failed');
         return false;
     }
@@ -273,9 +256,9 @@ function checkInputs(item){
 }
 
 //add/edit a voucher
-function addEditItem(item){
-    showNoticeAlert(`The item named ${item.firstName} ${item.lastName} has been added/edited.`, 'successful');
-    console.log(item);
+function addEditItem(staffObj){
+    showNoticeAlert(`The item named ${staffObj.getFirstName()} ${staffObj.getLastName()} has been added/edited.`, 'successful');
+    console.log(staffObj);
 }
 
 

@@ -1,4 +1,4 @@
-export const Staff = [
+export const StaffList = [
     {
         id: 1,
         firstName: 'Ivy',

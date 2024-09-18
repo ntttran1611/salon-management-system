@@ -1,7 +1,6 @@
 import { Bills } from "../data/bill-list.js";
-import { Branches } from "../data/branch-list.js";
 import { serviceList } from "../data/service-list.js";
-import { Staff } from "../data/staff-list.js";
+import { StaffList } from "../data/staff-list.js";
 import { Bill } from "../lib/objects/bill.js";
 import { getStringFormat} from "../lib/functions/shared.js";
 import { showDeleteAlert, showNoticeAlert, showCheckOutDialog } from "../lib/components/dialog.js";
@@ -10,14 +9,11 @@ document.querySelector("#bills").addEventListener('click', loadPage);
 window.onload = loadPage;
 
 const tempBillsList = Bills; //must be filtered by branches
-//const tempBrancheslist = Branches;
 const tempServiceList = serviceList;
-const tempStaffList = Staff;
+const tempStaffList = StaffList;
 
 //display all bills and the first bill when the page is load
 function loadPage(){
-    //get branch list
-    //let branches = tempBrancheslist.map((branch)=>{return `<option id=${branch.id} value=${branch.id}>${branch.name}</option>`})
     //get all bills
     const billList = getBillList();
     if(document.querySelector("#bills").className.includes("active")){
@@ -32,6 +28,7 @@ function loadPage(){
             </div>
         `
     }
+    
     const billItems = document.querySelectorAll(".list-item");
     for(let billItem of billItems){
         billItem.onclick = () => handleListItemClicked(billItem.id);
@@ -49,7 +46,7 @@ function getBillList(){
     if(tempBillsList.length == 0){
        return `<p class="note-lg">No bill recorded</>`;
     } else {
-        return `<div class="vertical-list" style="justify-content: space-evenly;">${tempBillsList.map((bill) => {
+        return `<div class="vertical-list">${tempBillsList.map((bill) => {
             return `<div id=${bill.id} class="list-item ${bill.paid ? `checked` : ''}">
                         <div class="choose-indicator"></div>
                         <div class="list-item-content" id=${bill.id}>${bill.id} - ${bill.cusName}</div>
@@ -85,7 +82,7 @@ function loadBill(billObj){
     handleAddSingleService(billObj);
     document.querySelector('#check-out-btn').onclick = () => {
         //console.log(billObj);
-        showCheckOutDialog(billObj, tempServiceList);
+        billObj.getStatus() ? uncheckBill(billObj) : showCheckOutDialog(billObj, tempServiceList);
     };
     document.querySelector('#bill-delete-btn').onclick = () => {
         showDeleteAlert(billObj.getId(), billObj.getCusName());
@@ -99,21 +96,23 @@ function loadBill(billObj){
     });
 }
 
-//modify relevant info when a service on the bill is changed
+function uncheckBill(billObj){
+    billObj.uncheck();
+    loadBill(billObj);
+}
+
 function handleServiceOptionChanged(billObj){
     const serviceSelects = document.querySelectorAll('.table-select.service');
     for(let select of serviceSelects){
         select.onchange = (e) => {
-            //get the id of the bill service
             const serviceIndex = e.target.id.slice(-1);
-            //get the service from the service list 
             const service = serviceList.find((service)=>service.id == e.target.value);
 
             const priceRow = document.querySelector(`#price-${serviceIndex}`);
             const totalBillText = document.querySelector('#total'); 
             const totalRow = document.querySelector(`#total-${serviceIndex}`);
             const discountRow = document.querySelector(`#discount-${serviceIndex}`);
-            
+            //set relevant text outputs
             priceRow.textContent = getStringFormat(service.price);
             totalRow.textContent = getStringFormat((parseFloat(service.price) - parseFloat(discountRow.value)).toFixed(2));
             //set the chosen service to the bill object
@@ -122,7 +121,7 @@ function handleServiceOptionChanged(billObj){
         }
     }
 }
-//modify relevant info when discount is changed
+
 function handleDiscountChanged(billObj){
     const discountInputs = document.querySelectorAll('.table-input.discount');
     for(let discountInput of discountInputs){
@@ -136,13 +135,13 @@ function handleDiscountChanged(billObj){
                 if(getStringFormat(e.target.value)){
                     totalRow.textContent = getStringFormat((parseFloat(priceRow.textContent) - parseFloat(e.target.value)).toFixed(2));
                     e.target.value = getStringFormat(e.target.value);
-                    billObj.setServiceDiscount(serviceIndex, parseFloat(e.target.value));
-                    totalBillText.textContent = `${getStringFormat(billObj.getTotal(tempServiceList))}`;
                 } else {
                     showNoticeAlert("Invalid input. Correct format: (e.g.) 16, 16.00 or 16.0", 'failed');
-                    e.target.value = "0.00";
                     totalRow.textContent = priceRow.textContent;
+                    e.target.value = "0.00";
                 }
+                billObj.setServiceDiscount(serviceIndex, parseFloat(e.target.value));
+                totalBillText.textContent = `${getStringFormat(billObj.getTotal(tempServiceList))}`;
             } else {
                 e.target.value = "0.00";
             }
@@ -155,7 +154,6 @@ function handleStaffChanged(billObj){
     for(let staffSelect of staffSelects){
         staffSelect.onchange = (e) => {
             const serviceIndex = e.target.id.slice(-1);
-            //set the chosen staff to the bill object's service
             billObj.setServiceStaff(serviceIndex, parseInt(e.target.value));
         }
     }
@@ -166,7 +164,6 @@ function handleNoteChaged(billObj){
     for(let noteInput of noteInputs){
         noteInput.onchange = (e) => {
             const serviceIndex = e.target.id.slice(-1);
-            //set note
             billObj.setServiceNote(serviceIndex, parseInt(e.target.value));
         }
     }
@@ -187,14 +184,14 @@ function handleDeleteSingleService(billObj){
 function handleAddSingleService(billObj){
     const addingBtn = document.querySelector('.add-table-btn');
     addingBtn != null ? addingBtn.onclick = () => {
-        let addingIndex = billObj.getServicesCount();
+        let addingIndex = billObj.getServicesCount(); //the next service index (of the service array) will be the length of the current service array
         let serviceId = parseInt(document.querySelector(`#service-${addingIndex}`).value);
         let staffId = parseInt(document.querySelector(`#staff-${addingIndex}`).value);
-        let discount = document.querySelector(`#discount-${addingIndex}`).value == '' ? 0 : parseInt(document.querySelector(`#discount-${addingIndex}`).value);
+        let discount = document.querySelector(`#discount-${addingIndex}`).value == '' ? 0 : parseFloat(document.querySelector(`#discount-${addingIndex}`).value);
         let note = document.querySelector(`#note-${addingIndex}`).value;
 
         billObj.addService(serviceId, staffId, discount, note);
-        loadBill(billObj);
+        loadBill(billObj); //reload the bill interface
     } : null;
 }
 
@@ -235,7 +232,9 @@ function getRows(billObj){
         return `<option value=${service.id}>${service.title}</option>`
     }).join('');
     const staffOptions = tempStaffList.map((staff)=>{
-        return `<option value=${staff.id}>${staff.firstName} ${staff.lastName}</option>`
+        if(staff.active){
+            return `<option value=${staff.id}>${staff.firstName} ${staff.lastName}</option>`
+        }
     }).join('');
     
     const billServices = billObj.getBillServices();
@@ -291,7 +290,7 @@ function activateIndicator(id){
     }
 }
 
-//display services listed in the bill and corresponding staff
+//display services and corresponding staff listed on the bill
 function setStaffAndServices(services){
     const serviceSelects = document.querySelectorAll('.table-select.service');
     const staffSelects = document.querySelectorAll('.table-select.staff');
