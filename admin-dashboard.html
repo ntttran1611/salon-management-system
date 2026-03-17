@@ -20,8 +20,15 @@
         <!-- CSS -->
         <link rel="Stylesheet" href="css/admin-dashboard-style.css" >
         <link rel="stylesheet" href="lib/datatables/css/dataTables.css" />
-
-
+        <link rel="stylesheet" href="css/modal-style.css" />
+        <link rel="stylesheet" href="css/button-style.css" />
+        <link rel="stylesheet" href="css/toggle-style.css" />
+        <link rel="stylesheet" href="css/tooltip-style.css" />
+        <link rel="stylesheet" href="css/text-style.css" />
+        <link rel="stylesheet" href="css/icons-style.css" />
+        <link rel="stylesheet" href="css/form-style.css" />
+        <link rel="stylesheet" href="css/datatable-style.css" />
+        <link rel="stylesheet" href="css/customer-list-style.css" />
     </head>
     <body>
         <dialog>
@@ -31,33 +38,31 @@
         </dialog>
         <nav>
             <div class="header">
-                <h1>Sweetie's Admin</h1>
+                <h1>Sweetie Nails Admin Dashboard</h1>
                 <div class="clock">
                     <i class="fa-solid fa-clock"></i>
-                    <span>15/07/2024, 10:14</span>
+                    <time datetime="2026-01-20T19:30">20/01/2026, 19:30:00</time>
                 </div>
             </div>
             <hr>
-            <div>
                 <ul>
-                    <li onclick="showTab('bills')" id="bills" class="tab-link active"><i class="fa-solid fa-file-invoice-dollar"></i><span>Bills</span></span></li>
-                    <li onclick="showTab('vouchers')" id="vouchers" class="tab-link"><i class="fa-solid fa-gift"></i><span>Vouchers</span></span></li>
-                    <li onclick="showTab('income')" id="income" class="tab-link"><i class="fa-solid fa-money-check-dollar"></i><span>Income</span></span></li>
-                    <li onclick="showTab('performance')" id="performance" class="tab-link"><i class="fa-solid fa-chart-simple"></i></i><span>Performance</span></span></li>
+                    <li onclick="showTab('bills')" id="bills" class="tab-link active"><i class="fa-solid fa-file-invoice-dollar"></i><span>Bills</span></li>
+                    <li onclick="showTab('vouchers')" id="vouchers" class="tab-link"><i class="fa-solid fa-gift"></i><span>Vouchers</span></li>
+                    <li onclick="showTab('income')" id="income" class="tab-link"><i class="fa-solid fa-money-check-dollar"></i><span>Income</span></li>
+                    <li onclick="showTab('performance')" id="performance" class="tab-link"><i class="fa-solid fa-chart-simple"></i></i><span>Performance</span></li>
                     <li onclick="showTab('staff')" id="staff" class="tab-link"><i class="fa-solid fa-user"></i><span>Staff</span></span></li>
-                    <li onclick="showTab('services')" id="services" class="tab-link"><i class="fa-solid fa-hand-holding-heart"></i><span>Services</span></span></li>
-                    <li onclick="showTab('branches')" id="branches" class="tab-link"><i class="fa-solid fa-code-branch"></i><span>Branches</span></span></li>
+                    <li onclick="showTab('services')" id="services" class="tab-link"><i class="fa-solid fa-hand-holding-heart"></i><span>Services</span></li>
+                    <li onclick="showTab('branches')" id="branches" class="tab-link"><i class="fa-solid fa-code-branch"></i><span>Branches</span></li>
                 </ul>
-            </div>
         </nav>
         <main>
             
         </main>
         
-        <!--jquery-->
+        <!--jquery // This will be removed-->
         <script type="text/javascript" src="lib/jquery/jquery-3.7.1.min.js"></script>
 
-        <!--dataTables-->
+        <!--dataTables // This will be removed and replaced by vanila js table-->
         <script type="text/javascript" src="lib/datatables/js/dataTables.js"></script>
         
         <!--dashboard-controller-->

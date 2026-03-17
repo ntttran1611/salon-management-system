@@ -1,0 +1,58 @@
+/*TOGGLE*/
+.toggle-container {
+  width: 48%;
+}
+.toggle {
+  padding: 5px 0 5px 0;
+  width: 100%;
+  margin: 10px 0 10px 0;
+  display: flex;
+  justify-content: space-evenly;
+  border: none;
+  border-radius: 5px;
+  background-color: rgba(221, 218, 218, 0.3);
+}
+
+.toggle.enabled {
+  background-color: rgba(221, 218, 218, 0.3);
+  border-radius: 5px;
+}
+
+.toggle-btn {
+  width: calc(100% / 3);
+  font-family: "Cabin", sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  font-style: normal;
+  border: none;
+  cursor: pointer;
+  padding: 3px 0 3px 0;
+  color: var(--grey);
+  margin: 0 4px 0 4px;
+  text-align: center;
+}
+
+.toggle-btn.active {
+  border-radius: 3px;
+}
+
+.toggle-btn.active#toggle-active {
+  background-color: var(--dark-green);
+  color: white;
+}
+
+.toggle-btn.active#toggle-inactive {
+  background-color: var(--grey);
+  color: white;
+}
+
+.toggle-btn.active#toggle-warning {
+  background-color: var(--warning);
+  color: white;
+}
+
+.toggle-btn.payment-chosen {
+  background-color: var(--confirm);
+  color: white;
+  border-radius: 4px;
+}

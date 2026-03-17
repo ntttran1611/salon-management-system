@@ -1,0 +1,66 @@
+/* MODAL */
+dialog {
+  overflow-y: scroll;
+  padding: 0;
+  padding-bottom: 20px;
+  border: none;
+  border-radius: 10px;
+  -ms-overflow-style: none;
+  /* Internet Explorer 10+ */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+dialog::-webkit-scrollbar {
+  display: none;
+  /* Safari and Chrome */
+}
+
+dialog[open] {
+  animation: show 0.8s ease normal;
+}
+
+.modal {
+  width: 400px;
+  display: grid;
+  grid-template-areas:
+    "header"
+    "main"
+    "footer";
+  row-gap: 10px;
+  animation: hide 1s ease normal;
+}
+
+#modal-header {
+  grid-area: header;
+}
+
+#modal-content {
+  margin: 20px 10px 20px 10px;
+  grid-area: main;
+  text-align: center;
+}
+
+h2.failed {
+  background-color: var(--warning);
+}
+
+h2.successful {
+  background-color: var(--dark-green);
+}
+
+h2.check-out {
+  background-color: var(--primary);
+}
+
+.stress-span {
+  color: var(--warning);
+  font-weight: 700;
+}
+
+#modal-footer {
+  margin: 0 20px 0 20px;
+  display: flex;
+  justify-content: space-between;
+  grid-area: footer;
+}

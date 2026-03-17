@@ -1,0 +1,63 @@
+/*TEXT*/
+.note-lg {
+  display: flex;
+  justify-content: center;
+  font-family: "Cabin", sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  font-style: normal;
+  font-variation-settings: "wdth" 100;
+  color: #989898;
+}
+
+h1 {
+  padding: 10px 0 0 20px;
+  margin: 0;
+  color: black;
+  font-family: "Cabin", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 700;
+  font-style: normal;
+  font-variation-settings: "wdth" 100;
+  width: 200px;
+}
+
+span {
+  font-family: "Cabin", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-variation-settings: "wdth" 100;
+}
+
+h2 {
+  margin: 0;
+  padding: 10px 0 10px 20px;
+  color: white;
+  background-color: var(--pink-grey);
+  width: calc(100% - 20px);
+  font-family: "Cabin", sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  font-style: normal;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+.notice {
+  display: none;
+  font-family: "Cabin", sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  font-style: italic;
+}
+
+.notice#error {
+  display: block;
+  color: var(--warning);
+}
+
+.notice#success {
+  display: block;
+  color: var(--dark-green);
+}

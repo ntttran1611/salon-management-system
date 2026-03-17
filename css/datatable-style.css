@@ -1,0 +1,24 @@
+/*Overrides DataTables style*/
+div.dt-container {
+  margin: 10px 20px 10px 20px;
+  font-family: "Cabin", sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  font-style: normal;
+  height: 80%;
+  width: 95%;
+  overflow-y: scroll;
+  -ms-overflow-style: none;
+  /* Internet Explorer 10+ */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+div.dt-container::-webkit-scrollbar {
+  display: none;
+  /* Safari and Chrome */
+}
+
+table.dataTable thead th {
+  font-size: 16px;
+}

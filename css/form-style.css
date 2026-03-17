@@ -1,0 +1,152 @@
+/*Form*/
+/*Text Input*/
+.form-input {
+  margin: 10px 0 10px 0;
+  font-family: "Cabin", sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  font-style: normal;
+  width: 100%;
+  padding: 8px 0 8px 0;
+  border: 1px solid var(--light-grey);
+  border-radius: 5px;
+  text-indent: 10px;
+  color: var(--light-grey);
+}
+
+.form-input:focus {
+  outline: none;
+  border: 1px solid black;
+}
+
+.table-input {
+  font-family: "Cabin", sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  font-style: normal;
+  width: 100%;
+  border: none;
+  background-color: transparent;
+  padding: 5px 0 5px 0;
+  margin: -5px 0 -5px 0;
+}
+
+.table-input:focus {
+  outline: none;
+}
+
+/*Select*/
+select {
+  cursor: pointer;
+  -ms-overflow-style: none;
+  /* Internet Explorer 10+ */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+select::-webkit-scrollbar {
+  display: none;
+  /* Safari and Chrome */
+}
+
+.form-select.bill-board {
+  background-color: rgb(221, 218, 218, 0);
+  border: none;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.form-select {
+  width: 100%;
+  margin: 10px 0 10px 0;
+  font-family: "Cabin", sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  font-style: normal;
+  padding: 8px 0 8px 0;
+  text-indent: 10px;
+  border: 1px solid var(--grey);
+  border-radius: 5px;
+}
+
+.table-select {
+  background-color: transparent;
+  width: 100%;
+  font-family: "Cabin", sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  font-style: normal;
+  border: none;
+  padding: 5px 0 5px 0;
+  margin: -5px 0 -5px 0;
+}
+
+.table-select:focus {
+  outline: none;
+}
+
+.option-container {
+  display: grid;
+  width: 100%;
+  gap: 2px;
+  grid-template-columns: auto auto;
+  grid-template-rows: calc(80px / 3) calc(80px / 3) calc(80px / 3);
+  height: 80px;
+  border: 1px solid var(--light-grey);
+  border-radius: 5px;
+  overflow-y: scroll;
+}
+
+.option-title {
+  font-size: 12px;
+}
+
+.option {
+  cursor: pointer;
+  margin: 2px;
+  text-align: center;
+  background-color: var(--light-grey);
+  color: var(--grey);
+  padding: 1px 2px 1px 2px;
+  border-radius: 3px;
+  opacity: 0.7;
+}
+
+/*Labels/Form texts*/
+.form-label {
+  color: var(--grey);
+  font-family: "Cabin", sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  font-style: normal;
+}
+
+/*Form Layout*/
+.form {
+  width: 80%;
+  margin: 30px 20px 30px 20px;
+}
+
+.double-inputs {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.selection-box {
+  width: 48%;
+}
+
+.text-input-container.half {
+  width: 48%;
+}
+
+.main-func-btns {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+}
+
+.confirm-btns {
+  display: none;
+}

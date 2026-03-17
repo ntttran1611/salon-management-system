@@ -1,0 +1,17 @@
+/* ICONS */
+.fa-solid.fa-circle.status {
+  height: 7px;
+  width: 7px;
+}
+
+.fa-solid.fa-circle.status.active {
+  color: var(--dark-green);
+}
+
+.fa-solid.fa-circle.status.inactive {
+  color: var(--grey);
+}
+
+.fa-solid.fa-circle.status.warning {
+  color: var(--warning);
+}

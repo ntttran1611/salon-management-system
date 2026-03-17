@@ -1,0 +1,59 @@
+/*List*/
+.vertical-list {
+  height: calc(100% - 100px);
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
+  -ms-overflow-style: none;
+  /* Internet Explorer 10+ */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+.vertical-list.check-out {
+  height: 100px;
+}
+
+.vertical-list::-webkit-scrollbar {
+  display: none;
+  /* Safari and Chrome */
+}
+
+.list-item {
+  height: 40px;
+  display: flex;
+  align-items: center;
+  margin: 10px;
+}
+
+.list-item.checked {
+  background-color: var(--second-light-grey);
+}
+
+.choose-indicator {
+  height: 100%;
+  width: 10px;
+  background-color: white;
+  transition: 0.3s;
+  border-radius: 5px;
+}
+
+.choose-indicator.active {
+  background-color: var(--secondary);
+}
+
+.list-item:hover .choose-indicator {
+  background-color: var(--secondary);
+}
+
+.list-item:hover {
+  cursor: pointer;
+}
+
+.list-item-content {
+  margin-left: 10px;
+  font-family: "Cabin", sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  font-style: normal;
+}
