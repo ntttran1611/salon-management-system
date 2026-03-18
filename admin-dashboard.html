@@ -14,6 +14,8 @@
         <link href="https://fonts.googleapis.com/css2?family=Cabin:ital,wght@0,400..700;1,400..700&display=swap"
             rel="stylesheet">
 
+        <link href="https://fonts.googleapis.com/css2?family=Mona+Sans:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
+
         <!-- Font Awesome Icon -->
         <script src="https://kit.fontawesome.com/a927491084.js" crossorigin="anonymous"></script>
         
@@ -32,13 +34,15 @@
     </head>
     <body>
         <dialog>
-            <h2 id="modal-header"></h2>
+            <div id="modal-header" class="title-container modal-title">
+                <h4 id="modal-header-text" ></h4>
+            </div>
             <div id="modal-content"></div>
             <div id="modal-footer"></div>
         </dialog>
         <nav>
             <div class="header">
-                <h1>Sweetie Nails Admin Dashboard</h1>
+                <h1 id="dashboard-name">Sweetie Nails Admin Dashboard</h1>
                 <div class="clock">
                     <i class="fa-solid fa-clock"></i>
                     <time datetime="2026-01-20T19:30">20/01/2026, 19:30:00</time>
@@ -86,6 +90,10 @@
                 document.getElementById(tabName).className += " active";
             }
 
+            /*
+            const navElem = document.querySelector("nav");
+            const main = document.querySelector("main")
+            main.style.height = (window.innerHeight - navElem.scrollHeight) + "px"*/
         </script>
     </body>
 </html>

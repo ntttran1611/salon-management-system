@@ -23,12 +23,17 @@ function loadPage() {
   if (document.querySelector("#bills").className.includes("active")) {
     document.querySelector("main").innerHTML = `
             <div class="col-1 sm">
-                <h2><i class="fa-solid fa-code-branch"></i> Kingston</h2>
+            <div class="title-container">
+            <i class="fa-solid fa-code-branch"></i>
+              <h2 class="col-title"> Kingston</h2>
+            </div>
                 ${billList}
             </div>
             <div class="col-2 lg">
-                <h2>No bill selected</h2>
-                <p class="note-lg">No bill selected</>
+              <div class="title-container">
+                <h2 class="col-title">No bill selected</h2>
+              </div>
+              <p class="note-lg">No bill selected</>
             </div>
         `;
   }
@@ -229,7 +234,18 @@ function handleAddSingleService(billObj) {
 //generate bill info to html
 function generateBillContent(billObj) {
   return `
-        <h2><b style="color: black">Bill ID:</b> ${billObj.getId()} | <b style="color: black">Client's name:</b> ${billObj.getCusName()} | <b style="color: black">Contact:</b> ${billObj.getMobile()} | <b style="color: black">Come at:</b> ${billObj.getEntranceDate()}, ${billObj.getEntranceTime()}</h2>
+        <div class="title-container">
+          <h2 class="col-title">
+            <b style="color: #474747">Bill ID: </b> 
+             ${billObj.getId()} | 
+            <b style="color: #474747">Client's name: </b> 
+            ${billObj.getCusName()} | 
+            <b style="color: #474747">Contact: </b> 
+            ${billObj.getMobile()} | 
+            <b style="color: #474747">Come at: </b> 
+            ${billObj.getEntranceDate()}, ${billObj.getEntranceTime()}
+          </h2>
+        </div>
         <table id="myTable" class="hover" style="width: 100%">
             <thead>
                 <tr>

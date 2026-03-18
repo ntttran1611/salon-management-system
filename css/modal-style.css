@@ -41,15 +41,15 @@ dialog[open] {
   text-align: center;
 }
 
-h2.failed {
+#modal-header.failed {
   background-color: var(--warning);
 }
 
-h2.successful {
+#modal-header.successful {
   background-color: var(--dark-green);
 }
 
-h2.check-out {
+#modal-header.check-out {
   background-color: var(--primary);
 }
 

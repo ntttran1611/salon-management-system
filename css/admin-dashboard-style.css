@@ -10,6 +10,19 @@
   --confirm: #bba366;
 }
 
+html {
+  overflow-y: scroll;
+  -ms-overflow-style: none;
+  /* Internet Explorer 10+ */
+  scrollbar-width: none;
+  /* Firefox */
+  font-family: "Mona Sans", sans-serif;
+}
+html::-webkit-scrollbar {
+  display: none;
+  /* Safari and Chrome */
+}
+
 body {
   min-width: 550px;
   margin: 0;
@@ -45,16 +58,17 @@ nav .header > h1 {
 
 nav .header .clock {
   display: flex;
+  align-items: center;
   align-self: end;
 }
 
 nav .header .clock time {
-  color: black;
+  color: #252525;
   padding: 0 10px 0 5px;
 }
 
 nav .header .clock i {
-  color: black;
+  color: #252525;
 }
 
 nav ul {
@@ -82,7 +96,7 @@ nav ul li i {
 }
 
 nav ul li:hover,
-.active {
+nav ul li.tab-link.active {
   cursor: pointer;
   background-color: white;
   border-top-left-radius: 10px;
@@ -107,16 +121,31 @@ nav ul li:hover span {
 /* MAIN + TABS */
 main {
   display: flex;
-  height: auto;
   padding: 10px 0px 10px 0px;
   box-sizing: border-box;
   justify-content: space-evenly;
+  height: calc(100vh - 140px);
 }
+
+.title-container {
+  display: flex;
+  align-items: center;
+  background-color: var(--pink-grey);
+  width: 100%;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  padding: 10px 0 10px 0px;
+}
+
+.title-container > .fa-code-branch {
+  color: whitesmoke;
+  margin: 0 -15px 0 20px;
+}
+
 /* COL-1 */
 .col-1 {
   position: relative;
   background-color: white;
-  height: calc(100vh - 150px);
   flex-basis: 60%;
   border-radius: 10px;
   opacity: 0;
@@ -125,6 +154,8 @@ main {
 }
 
 .col-1.sm {
+  display: flex;
+  flex-direction: column;
   flex-basis: 25%;
 }
 
@@ -152,8 +183,6 @@ main {
 .col-2.lg {
   height: auto;
   flex-basis: 70%;
-
-  display: flex;
 }
 
 .bill-footer {
@@ -167,7 +196,7 @@ main {
   color: var(--light-grey);
 }
 
-@media (width < 1070px) {
+@media (width < 600px) {
   .col-2 {
     display: none;
   }
