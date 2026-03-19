@@ -124,7 +124,6 @@ main {
   padding: 10px 0px 10px 0px;
   box-sizing: border-box;
   justify-content: space-evenly;
-  height: calc(100vh - 140px);
 }
 
 .title-container {

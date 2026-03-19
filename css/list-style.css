@@ -12,6 +12,10 @@
   /* Safari and Chrome */
 }
 
+.vertical-list.check-out {
+  height: 100px;
+}
+
 .list-item {
   height: 40px;
   display: flex;
