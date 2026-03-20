@@ -17,15 +17,15 @@ import { showDeleteAlert, showNoticeAlert } from "../lib/components/dialog.js";
 import {
   getTemplate,
   tableHeaderGenerator,
+  twoColLayoutAnimation,
+  viewButtonGenerator,
 } from "../lib/utils/layoutHandler.js";
 
-//get vouchers list from db
-const tempVouchersList = Voucher.getVoucherArray(Vouchers);
-
 document.querySelector("#vouchers").addEventListener("click", loadPage);
-//display voucher list when the corresponding tab link is being chosen
+
 async function loadPage() {
   if (document.querySelector("#vouchers").className.includes("active")) {
+    const tempVouchersList = Voucher.getVoucherArray(Vouchers);
     const voucherTableHeaders = [
       "Status",
       "Code",
@@ -48,52 +48,66 @@ async function loadPage() {
 
     const tableHeaderElem = document.querySelector("thead");
     tableHeaderElem.appendChild(tableHeaderNames);
-    //get rows with data
-    getTableRows();
 
-    //build the table
-    $(document).ready(function () {
-      $("#myTable").DataTable();
-    });
-
-    //add onShow id to trigger animations
-    setTimeout(() => {
-      document.querySelector(".col-1").id = "onShow";
-      document.querySelector(".col-2").id = "onShow";
-    }, 1);
+    buildVoucherTable(tempVouchersList);
+    twoColLayoutAnimation();
   }
 }
 
-function getTableRows() {
-  const tableBody = document.querySelector("tbody");
-  tableBody.innerHTML = "";
-  for (let voucher of tempVouchersList) {
-    const vcRowDataTemplate = getTemplate(
-      "vouchers-templates",
-      "#voucher-table-body-template",
-    );
-    vcRowDataTemplate.then((res) => {
-      const vcRowClone = document.importNode(res.content, true);
-
-      let tdLists = vcRowClone.querySelectorAll("td");
-      tdLists[1].textContent = voucher.getCode();
-      tdLists[2].textContent = voucher.getBuyerName();
-      tdLists[3].textContent = voucher.getBuyerName();
-      tdLists[4].textContent = voucher.getExpiryDate();
-      const vcStatusIcon = vcRowClone.querySelector(".status");
-      vcStatusIcon.className += ` ${voucher.getStatus()}`;
-      const viewButtons = document.querySelectorAll(".view-btn");
-      for (let viewBtn of viewButtons) {
-        viewBtn.id = voucher.getId();
-        viewBtn.onclick = () => handleViewAddButtonsClicked(viewBtn.id);
-      }
-      tableBody.appendChild(vcRowClone);
+function buildVoucherTable(tempVouchersList) {
+  //get rows with data
+  let data = getRowData(tempVouchersList);
+  //build the table
+  $(document).ready(function () {
+    $("#myTable").DataTable({
+      data: data,
+      columns: [
+        {
+          data: "status",
+          render: function (data) {
+            return `<i class="fa-solid fa-circle status ${data}"></i>`;
+          },
+        },
+        { data: "code" },
+        { data: "buyer" },
+        { data: "price" },
+        { data: "expiry" },
+        {
+          data: "function",
+          render: function (data) {
+            return viewButtonGenerator(
+              data,
+              tempVouchersList,
+              handleViewAddButtonsClicked,
+            );
+          },
+        },
+      ],
     });
+  });
+}
+
+function getRowData(tempVouchersList) {
+  let data = [];
+
+  for (let voucher of tempVouchersList) {
+    const rowData = {
+      status: voucher.getStatus(),
+      code: voucher.getCode(),
+      buyer: voucher.getBuyerName(),
+      price: voucher.getPrice(),
+      expiry: voucher.getExpiryDate(),
+      function: voucher.getId(),
+    };
+
+    data.push(rowData);
   }
+
+  return data;
 }
 
 //show input tab when view/add buttons are hit
-function handleViewAddButtonsClicked(id) {
+function handleViewAddButtonsClicked(id, tempVouchersList) {
   //search for the chosen voucher using its id
   const chosenVoucher = tempVouchersList.find(
     (voucherObj) => voucherObj.getId() == id,

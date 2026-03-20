@@ -21,3 +21,17 @@ div.dt-container::-webkit-scrollbar {
 table.dataTable thead th {
   font-size: 16px;
 }
+
+tbody {
+  height: 100%;
+  overflow-y: scroll;
+  -ms-overflow-style: none;
+  /* Internet Explorer 10+ */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+tbody::-webkit-scrollbar {
+  display: none;
+  /* Safari and Chrome */
+}
