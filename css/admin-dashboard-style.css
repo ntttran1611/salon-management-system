@@ -145,7 +145,7 @@ main {
 .col-1 {
   position: relative;
   background-color: white;
-  flex-basis: 60%;
+  flex-basis: 55%;
   border-radius: 10px;
   opacity: 0;
   transition: all 0.7s ease-in-out;
