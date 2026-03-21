@@ -26,35 +26,36 @@ document.querySelector("#vouchers").addEventListener("click", loadPage);
 async function loadPage() {
   if (document.querySelector("#vouchers").className.includes("active")) {
     const tempVouchersList = Voucher.getVoucherArray(Vouchers);
-    const voucherTableHeaders = [
-      "Status",
-      "Code",
-      "Buyer Name",
-      "Price",
-      "Expiry",
-      "Function",
-    ];
-    const mainElem = document.querySelector("main");
-    const tableHeaderNames = tableHeaderGenerator(voucherTableHeaders);
-
-    const twoColTemplate = await getTemplate(
-      "two-col-template",
-      "#two-col-template",
-    );
-
-    const templateClone = document.importNode(twoColTemplate.content, true);
-    mainElem.innerHTML = "";
-    mainElem.appendChild(templateClone);
-
-    const tableHeaderElem = document.querySelector("thead");
-    tableHeaderElem.appendChild(tableHeaderNames);
-
+    await buildTwoColLayout();
     buildVoucherTable(tempVouchersList);
     twoColLayoutAnimation();
   }
 }
 
+async function buildTwoColLayout() {
+  const main = document.querySelector("main");
+  const twoColTemplate = await getTemplate(
+    "two-col-template",
+    "#two-col-template",
+  );
+  const templateClone = document.importNode(twoColTemplate.content, true);
+  main.innerHTML = "";
+  if (main) main.appendChild(templateClone);
+}
+
 function buildVoucherTable(tempVouchersList) {
+  const voucherTableHeaders = [
+    "Status",
+    "Code",
+    "Buyer Name",
+    "Price",
+    "Expiry",
+    "Function",
+  ];
+  const tableHeaderNames = tableHeaderGenerator(voucherTableHeaders);
+  const tableHeaderElem = document.querySelector("thead");
+  if (tableHeaderElem) tableHeaderElem.appendChild(tableHeaderNames);
+
   //get rows with data
   let data = getRowData(tempVouchersList);
   //build the table
@@ -110,20 +111,18 @@ function getRowData(tempVouchersList) {
 function handleViewAddButtonsClicked(id, tempVouchersList) {
   //search for the chosen voucher using its id
   const chosenVoucher = tempVouchersList.find(
-    (voucherObj) => voucherObj.getId() == id,
+    (voucher) => voucher.getId() == id,
   );
   let isEditing = chosenVoucher != undefined;
-  let cloneVoucherObj = isEditing
-    ? chosenVoucher.clone()
-    : new Voucher(undefined);
+  let cloneVoucher = isEditing ? chosenVoucher.clone() : new Voucher(undefined);
 
   //add content to input elements
   const col2 = document.querySelector(".col-2");
-  col2.innerHTML = getInputContent(cloneVoucherObj, isEditing);
+  getInputTemplate(cloneVoucher);
 
   //set height to col-2 for animations
-  col2.style.height = col2.scrollHeight + "px";
-
+  //col2.style.height = col2.scrollHeight + "px";
+  /*
   //Add function to CLOSE TAB BUTTON
   document.querySelector("#close-btn").onclick = () => closeManagingTab();
 
@@ -206,32 +205,58 @@ function handleViewAddButtonsClicked(id, tempVouchersList) {
       if (!isEditing) cloneVoucherObj.setCode();
       addEditVoucher(cloneVoucherObj);
     }
-  };
+  };*/
+}
+
+async function getInputTemplate(voucher) {
+  const col2 = document.querySelector(".col-2");
+  const inputTemplate = await getTemplate(
+    "vouchers-templates",
+    "#voucher-input-template",
+  );
+  const templateClone = document.importNode(inputTemplate.content, true);
+  templateClone.querySelector("h2").textContent =
+    `Voucher #${voucher.getCode()}`;
+  templateClone.querySelector("input#voucher-buyer").value =
+    voucher.getBuyerName();
+  templateClone.querySelector("input#voucher-price").value = voucher.getPrice();
+  templateClone.querySelector("input#voucher-issue-date").value =
+    voucher.getIssueDate();
+  templateClone.querySelector("input#voucher-expiry-date").value =
+    voucher.getExpiryDate();
+  templateClone.querySelector("input#voucher-note").value = voucher.getNote();
+  templateClone.querySelector("input#voucher-mobile").value =
+    voucher.getMobile();
+  templateClone.querySelector("#close-btn").onclick = () => closeManagingTab();
+
+  col2.innerHTML = "";
+  if (col2) col2.appendChild(templateClone);
+  setVoucherStatus(voucher);
 }
 
 //handle toggle's value changed
-function handledToggleValueChanged(evt, voucherObj) {
+function handledToggleValueChanged(evt, voucher) {
   const toggle = document.querySelector(".toggle");
   if (toggle.className.includes("enabled")) {
     if (evt.target.id == "toggle-active") {
-      voucherObj.setStatus(false);
+      voucher.setStatus(false);
     } else if (evt.target.id == "toggle-inactive") {
-      voucherObj.setStatus(true);
+      voucher.setStatus(true);
     }
-    setVoucherStatus(voucherObj);
+    setVoucherStatus(voucher);
   }
 }
 
 //add voucher status to the form
-function setVoucherStatus(voucherObj) {
+function setVoucherStatus(voucher) {
   const toggle = document.querySelector(".toggle");
   for (let i = 0; i < toggle.children.length; i++) {
     toggle.children[i].className = "toggle-btn";
   }
   let status =
-    voucherObj != undefined
-      ? voucherObj.getStatus() != "permaInactive"
-        ? voucherObj.getStatus()
+    voucher != undefined
+      ? voucher.getStatus() != "permaInactive"
+        ? voucher.getStatus()
         : "inactive"
       : "active";
   document.querySelector(`#toggle-${status}`).className += " active";

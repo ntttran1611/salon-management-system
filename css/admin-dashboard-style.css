@@ -168,7 +168,7 @@ main {
 .col-2 {
   display: flex;
   background-color: white;
-  height: 100px;
+  height: auto;
   flex-basis: 40%;
   border-radius: 10px;
   flex-direction: column;

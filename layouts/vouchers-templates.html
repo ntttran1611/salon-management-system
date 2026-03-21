@@ -15,3 +15,125 @@
     </td>
   </tr>
 </template>
+
+<template id="voucher-input-template">
+  <div class="title-container">
+    <h2 class="col-title"></h2>
+  </div>
+  <div class="main-func-btns">
+    <button id="edit-btn" class="round-btn edit-btn">
+      <i class="fa-solid fa-pen-to-square fa-lg"></i>
+      <span class="tooltiptext">Edit</span>
+    </button>
+    <button id="delete-btn" class="round-btn delete-btn">
+      <i class="fa-solid fa-trash fa-lg"></i>
+      <span class="tooltiptext">Remove</span>
+    </button>
+    <button class="round-btn close-btn" id="close-btn">
+      <i class="fa-solid fa-xmark fa-xl"></i>
+      <span class="tooltiptext">Close</span>
+    </button>
+  </div>
+  <div class="form">
+    <div class="double-inputs">
+      <div class="text-input-container half">
+        <label class="form-label" for="voucher-buyer"
+          >What is the buyer name?</label
+        ><br />
+        <input
+          class="form-input"
+          maxlength="20"
+          type="text"
+          id="voucher-buyer"
+          name="voucher-buyer"
+          disabled
+          required
+          value=""
+        />
+      </div>
+      <div class="text-input-container half">
+        <label class="form-label" for="voucher-price">Amount:</label><br />
+        <input
+          class="form-input"
+          type="text"
+          id="voucher-price"
+          name="voucher-price"
+          disabled
+          required
+          value=""
+        />
+      </div>
+    </div>
+    <div class="double-inputs">
+      <div class="text-input-container half">
+        <label class="form-label" for="voucher-issue-date">Date of issue:</label
+        ><br />
+        <input
+          class="form-input"
+          maxlength="10"
+          type="text"
+          id="voucher-issue-date"
+          name="voucher-issue-date"
+          disabled
+          required
+          value=""
+        />
+      </div>
+      <div class="text-input-container half">
+        <label class="form-label" for="voucher-expiry">Expired date:</label
+        ><br />
+        <input
+          class="form-input"
+          maxlength="10"
+          type="text"
+          id="voucher-expiry-date"
+          name="voucher-expiry-date"
+          disabled
+          required
+          value=""
+        />
+      </div>
+    </div>
+    <div class="double-inputs">
+      <div class="toggle-container">
+        <label class="form-label">Status:</label><br />
+        <div class="toggle">
+          <div class="toggle-btn active" id="toggle-active">Valid</div>
+          <div class="toggle-btn" id="toggle-inactive">Used</div>
+          <div class="toggle-btn" id="toggle-warning">Expired</div>
+        </div>
+      </div>
+      <div class="text-input-container half">
+        <label class="form-label" for="voucher-mobile">Buyer's mobile:</label
+        ><br />
+        <input
+          class="form-input"
+          maxlength="10"
+          type="text"
+          id="voucher-mobile"
+          name="voucher-mobile"
+          disabled
+          required
+          value=""
+        />
+      </div>
+    </div>
+    <div class="text-input-container">
+      <label class="form-label" for="voucher-note">Notes:</label><br />
+      <input
+        class="form-input"
+        maxlength="50"
+        type="text"
+        id="voucher-note"
+        name="voucher-note"
+        disabled
+        required
+        value=""
+      />
+    </div>
+    <div class="confirm-btns">
+      <button id="confirm-btn" class="square-btn confirm-btn">Confirm</button>
+      <button id="cancel-btn" class="square-btn cancel-btn">Cancel</button>
+    </div>
+  </div>
+</template>
