@@ -70,3 +70,8 @@ button i {
 #bill-delete-btn {
   background-color: var(--warning);
 }
+
+#edit-btn,
+#delete-btn {
+  display: none;
+}

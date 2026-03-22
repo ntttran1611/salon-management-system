@@ -1,7 +1,7 @@
 import { Bills } from "../data/bill-list.js";
 import { serviceList } from "../data/service-list.js";
 import { StaffList } from "../data/staff-list.js";
-import { Bill } from "../lib/objects/bill.js";
+import { Bill } from "../lib/api/bill.js";
 import { getStringFormat } from "../lib/functions/shared.js";
 import {
   showDeleteAlert,

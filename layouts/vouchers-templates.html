@@ -1,21 +1,3 @@
-<template id="voucher-table-body-template">
-  <tr>
-    <td>
-      <i class="fa-solid fa-circle status"></i>
-    </td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td>
-      <button id="" class="round-btn view-btn">
-        <i class="fa-regular fa-eye fa-sm"></i>
-        <span class="tooltiptext">View/Edit</span>
-      </button>
-    </td>
-  </tr>
-</template>
-
 <template id="voucher-input-template">
   <div class="title-container">
     <h2 class="col-title"></h2>
@@ -27,37 +9,36 @@
     </button>
     <button id="delete-btn" class="round-btn delete-btn">
       <i class="fa-solid fa-trash fa-lg"></i>
-      <span class="tooltiptext">Remove</span>
+      <span class="tooltiptext">Delete</span>
     </button>
     <button class="round-btn close-btn" id="close-btn">
       <i class="fa-solid fa-xmark fa-xl"></i>
       <span class="tooltiptext">Close</span>
     </button>
   </div>
-  <div class="form">
+  <form class="form">
     <div class="double-inputs">
       <div class="text-input-container half">
-        <label class="form-label" for="voucher-buyer"
-          >What is the buyer name?</label
+        <label class="form-label" for="buyer">What is the buyer name?</label
         ><br />
         <input
           class="form-input"
           maxlength="20"
           type="text"
-          id="voucher-buyer"
-          name="voucher-buyer"
+          id="buyer"
+          name="buyer"
           disabled
           required
           value=""
         />
       </div>
       <div class="text-input-container half">
-        <label class="form-label" for="voucher-price">Amount:</label><br />
+        <label class="form-label" for="price">Amount:</label><br />
         <input
           class="form-input"
           type="text"
-          id="voucher-price"
-          name="voucher-price"
+          id="price"
+          name="price"
           disabled
           required
           value=""
@@ -66,28 +47,26 @@
     </div>
     <div class="double-inputs">
       <div class="text-input-container half">
-        <label class="form-label" for="voucher-issue-date">Date of issue:</label
-        ><br />
+        <label class="form-label" for="issueDate">Date of issue:</label><br />
         <input
           class="form-input"
           maxlength="10"
           type="text"
-          id="voucher-issue-date"
-          name="voucher-issue-date"
+          id="issueDate"
+          name="issueDate"
           disabled
           required
           value=""
         />
       </div>
       <div class="text-input-container half">
-        <label class="form-label" for="voucher-expiry">Expired date:</label
-        ><br />
+        <label class="form-label" for="expiryDate">Expired date:</label><br />
         <input
           class="form-input"
           maxlength="10"
           type="text"
-          id="voucher-expiry-date"
-          name="voucher-expiry-date"
+          id="expiryDate"
+          name="expiryDate"
           disabled
           required
           value=""
@@ -104,14 +83,13 @@
         </div>
       </div>
       <div class="text-input-container half">
-        <label class="form-label" for="voucher-mobile">Buyer's mobile:</label
-        ><br />
+        <label class="form-label" for="mobile">Buyer's mobile:</label><br />
         <input
           class="form-input"
           maxlength="10"
           type="text"
-          id="voucher-mobile"
-          name="voucher-mobile"
+          id="mobile"
+          name="mobile"
           disabled
           required
           value=""
@@ -119,21 +97,23 @@
       </div>
     </div>
     <div class="text-input-container">
-      <label class="form-label" for="voucher-note">Notes:</label><br />
+      <label class="form-label" for="note">Notes:</label><br />
       <input
         class="form-input"
         maxlength="50"
         type="text"
-        id="voucher-note"
-        name="voucher-note"
+        id="note"
+        name="note"
         disabled
         required
         value=""
       />
     </div>
     <div class="confirm-btns">
-      <button id="confirm-btn" class="square-btn confirm-btn">Confirm</button>
+      <button type="submit" id="confirm-btn" class="square-btn confirm-btn">
+        Confirm
+      </button>
       <button id="cancel-btn" class="square-btn cancel-btn">Cancel</button>
     </div>
-  </div>
+  </form>
 </template>
