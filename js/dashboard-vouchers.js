@@ -16,6 +16,7 @@ import {
   tableHeaderGenerator,
   animateTwoColLayout,
   viewButtonGenerator,
+  buildTwoColLayout,
 } from "../lib/utils/layout-handler.js";
 import { formatMoney } from "../lib/utils/currency.js";
 import { checkIsPriceNumber } from "../lib/utils/data-validation.js";
@@ -25,23 +26,10 @@ document.querySelector("#vouchers").addEventListener("click", loadPage);
 async function loadPage() {
   if (document.querySelector("#vouchers").className.includes("active")) {
     const tempVouchersList = getVoucherList();
-    await buildTwoColLayout(tempVouchersList);
+    await buildTwoColLayout(tempVouchersList, openForm);
     buildVoucherTable(tempVouchersList);
     animateTwoColLayout();
   }
-}
-
-async function buildTwoColLayout(tempVouchersList) {
-  const main = document.querySelector("main");
-  const twoColTemplate = await getTemplate(
-    "two-col-template",
-    "#two-col-template",
-  );
-  const templateClone = document.importNode(twoColTemplate.content, true);
-  const addBtn = templateClone.querySelector("#add-btn");
-  addBtn.addEventListener("click", () => openForm(null, tempVouchersList));
-  main.innerHTML = "";
-  if (main) main.appendChild(templateClone);
 }
 
 function buildVoucherTable(tempVouchersList) {
@@ -115,6 +103,7 @@ async function openForm(id, tempVouchersList) {
   let voucher = isEditing
     ? { ...chosenVoucher }
     : {
+        id: crypto.randomUUID(),
         buyer: "",
         issueDate: formatDate(today),
         expiryDate: formatDate(nextThreeYearsFromToday),
@@ -207,9 +196,8 @@ function handleWhenOriginalValueChanged(e) {
 
 function submitForm(voucher) {
   const inputElems = document.querySelectorAll("input.form-input");
-  const textValue = document.querySelector("p.#remainingValueCents");
+  const textValue = document.querySelector("p#remainingValueCents");
   const voucherClone = { ...voucher };
-  console.log(voucher);
 
   for (let inputElem of inputElems) {
     voucherClone[inputElem.name] = inputElem.value;

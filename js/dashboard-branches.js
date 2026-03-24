@@ -1,254 +1,192 @@
-import { Branches } from '../data/branch-list.js';
-import { enableFormEditing, disableFormEditing, 
-    enableSelects, disableSelects,
-    enableInputs, disableInputs,  
-    enableLabels, disableLabels,
-    closeManagingTab, startTimes, endTimes } from '../lib/functions/shared.js';
-import { showDeleteAlert, showNoticeAlert } from '../lib/components/dialog.js';
+import {
+  enableFormEditing,
+  enableSelects,
+  enableInputs,
+  enableLabels,
+} from "../lib/functions/shared.js";
+import { showDeleteAlert } from "../lib/components/dialog.js";
+import {
+  addEditBranch,
+  checkInputs,
+  getBranchList,
+} from "../lib/api/branch-api.js";
+import {
+  animateTwoColLayout,
+  buildTwoColLayout,
+  getTemplate,
+  tableHeaderGenerator,
+  viewButtonGenerator,
+} from "../lib/utils/layout-handler.js";
 
-//get list of branches from db
-let tempBranchesList = Branches;
-document.querySelector('#branches').addEventListener('click', loadPage);
+document.querySelector("#branches").addEventListener("click", loadPage);
 
-//display all branches when the corresponding tab link is chosen
-//a table + a content-managing board
-function loadPage(){
-    if (document.querySelector('#branches').className.includes('active')){
-        //get rows with data
-        const rows = getTableRows();
-        //declare table and add rows
-        document.querySelector("main").innerHTML = `
-            <div class='col-1'>
-                <table id="myTable" class="hover" style="width:100%">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Trading hours</th>
-                            <th>Address</th>
-                            <th>Function</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${rows}
-                    </tbody>
-                </table>
-                <button id='add-btn' class="round-btn add-btn" >
-                    <i class="fa-solid fa-plus fa-lg"></i>
-                    <span class="tooltiptext">Add new</span> 
-                </button>
-            </div>
-            <div class='col-2'>
-                <h2>No item selected</h2>
-                <p class="note-lg">No item selected</>
-            </div>
-        `;
-
-        //Add interactions to functional buttons
-        //VIEW BUTTON - display a branch
-        const viewButtons = document.querySelectorAll('.view-btn');
-        for (let i = 0; i < tempBranchesList.length; i++){
-            viewButtons[i].onclick = () => handleViewAddButtonsClicked(i + 1);
-        }
-
-        //ADD BUTTON - add a branch
-        document.querySelector('#add-btn').onclick = () => handleViewAddButtonsClicked(null);
-
-        //build the table
-        $(document).ready(function () {
-            $('#myTable').DataTable();
-        });
-            
-        //add onShow id to trigger animations
-        setTimeout(()=>{
-            document.querySelector('.col-1').id = "onShow";
-            document.querySelector('.col-2').id = "onShow";
-        }, 1);
-    }
+async function loadPage() {
+  if (document.querySelector("#branches").className.includes("active")) {
+    let tempBranchList = getBranchList();
+    await buildTwoColLayout(tempBranchList, openForm);
+    buildBranchTable(tempBranchList);
+    animateTwoColLayout();
+  }
 }
 
-//add data to table rows
-function getTableRows(){
-    let tableRowData = tempBranchesList.map((branch) => {
-        return `<tr>
-            <td>${branch.id}</td>
-            <td>${branch.name}</td>
-            <td>${branch.openingTime}-${branch.closingTime}</td>
-            <td>${branch.address != "" ? branch.address : 'No address provided'}</td>
-            <td>
-                <button id="${branch.id}" class="round-btn view-btn">
-                    <i class="fa-regular fa-eye fa-sm"></i> 
-                    <span class="tooltiptext">View/Edit</span>
-                </button> 
-            </td>
-        </tr>`
-    }).join('');
+function buildBranchTable(tempBranchList) {
+  let branchTableHeaders = [
+    "Name",
+    "Opening time",
+    "Closing time",
+    "Address",
+    "View",
+  ];
+  const tableHeaderNames = tableHeaderGenerator(branchTableHeaders);
+  const tableHeaderElem = document.querySelector("thead");
+  tableHeaderElem.appendChild(tableHeaderNames);
 
-    return tableRowData;
+  let data = getRowData(tempBranchList);
+  $(document).ready(function () {
+    $("#myTable").DataTable({
+      data: data,
+      columns: [
+        { data: "name" },
+        { data: "openingTime" },
+        { data: "closingTime" },
+        { data: "address" },
+        {
+          data: "function",
+          render: function (data) {
+            return viewButtonGenerator(data, tempBranchList, openForm);
+          },
+        },
+      ],
+    });
+  });
 }
 
-//set content and input elements to the form
-function getInputContent(branch, action){
-    //generate start-time and end-time options for the selects
-    let optionStartTimes = startTimes.map((value)=>{return `<option id=${value} value=${value}>${value}</option>`;}).join('');
-    let optionEndTimes = endTimes.map((value)=>{return `<option id=${value} value=${value}>${value}</option>`;}).join('');
-    //add content to the form inputs/selects if editing a branch
-    //if adding, leave the inputs blank
-    let tabContent = `
-            <h2> ${action > 0 ? `Branch #${branch.id} | ${branch.name}` : `Adding a new branch` }</h2>
-            <div class="main-func-btns">
-                ${action ? `<button id="edit-btn" class="round-btn edit-btn">
-                    <i class="fa-solid fa-pen-to-square fa-lg"></i>
-                    <span class="tooltiptext">Edit</span>
-                </button> 
-                <button id="delete-btn" class="round-btn delete-btn">
-                    <i class="fa-solid fa-trash fa-lg"></i>
-                    <span class="tooltiptext">Remove</span>
-                </button>` : '' }
-                <button class="round-btn close-btn" id="close-btn">
-                    <i class="fa-solid fa-xmark fa-xl"></i>
-                    <span class="tooltiptext">Close</span>
-                </button>
-            </div> 
-            <div class="form">
-                <div class="text-input-container">
-                    <label class="form-label" for='branch-name'>What is this branch's name?</label><br>
-                    <input class="form-input" maxlength=30 type="text" id="branch-name" name="branch-name" disabled required value='${branch.name}'>
-                </div>
-                <div class="double-inputs">
-                    <div class="selection-box">
-                        <label class="form-label" for="opening-time">Open at:</label><br>
-                        <select class="form-select" name="opening-time" id="opening-time" disabled required>
-                            ${optionStartTimes}
-                        </select>
-                    </div>
-                    <div class="selection-box">
-                        <label class="form-label" for="closing-time">Close at:</label><br>
-                        <select class="form-select name="closing-time" id="closing-time" disabled required>
-                            ${optionEndTimes}
-                        </select>
-                    </div>
-                </div>
-                <div class="text-input-container">
-                    <label class="form-label" for='branch-address'>What is its address?</label><br>
-                    <input class="form-input" maxlength=50 type="text" id="branch-address" name="branch-address" disabled required value='${branch.address}'>
-                </div>
-                <div class="confirm-btns">
-                    <button id="confirm-btn" class="square-btn confirm-btn">Confirm</button>
-                    <button id="cancel-btn" class="square-btn cancel-btn">Cancel</button>
-                </div>
-            </div>
-        `;
-        return tabContent;
-}
+function getRowData(tempBranchList) {
+  let data = [];
 
-//show input tab when view/add buttons are hit
-function handleViewAddButtonsClicked(id){
-    //search for the chosen branch using its id
-    const chosenBranch = tempBranchesList.filter((branch) => branch.id == id);
-    const isEditing = chosenBranch.length > 0; //check if the action is 'adding' or 'editing'
-    
-    //instance of the branch/new branch to be managed
-    const managedBranch = isEditing ? chosenBranch[0] : {
-        id: '',
-        name: '',
-        openingTime: '',
-        closingTime: '',
-        address: ''
+  for (let branch of tempBranchList) {
+    const rowData = {
+      name: branch.name,
+      openingTime: branch.openingTime,
+      closingTime: branch.closingTime,
+      address: branch.address,
+      function: branch.id,
     };
 
-    //display input elements and item content to the board
-    const col2 = document.querySelector('.col-2');
-    col2.innerHTML = getInputContent(managedBranch, isEditing);
+    data.push(rowData);
+  }
 
-    //set height to col-2 for animations
-    col2.style.height = col2.scrollHeight + 'px';
+  return data;
+}
 
-    //Add function to CLOSE TAB BUTTON
-    document.querySelector('#close-btn').onclick = () => closeManagingTab();
+//startTime, endTime indicates the first time and last time of the list
+//it can be openingTime or closingTime of the branch. e.g 9:00 or 13:00
+//startTime and endTime must be int
+//blockOfTime can be 60, 30, 15 (indicating that the time can be displayed in 00 / 00 and 30 / 00 and 30 and 15) respectively
+function tradingHourOptionsGenerator(startTime, endTime, blockOfTime) {
+  const optionListLength = (endTime - startTime) * (60 / blockOfTime);
+  let tempStartTime = startTime;
+  let optionsHTML = "";
+  for (let i = 0; i <= optionListLength; i++) {
+    const timeString = `${parseInt(tempStartTime)}:${String((tempStartTime - parseInt(tempStartTime)) * 60).padStart(2, "0")}`;
+    optionsHTML += `<option id=${timeString} value=${timeString}>${timeString}</option>`;
+    tempStartTime += blockOfTime / 60;
+  }
 
-    //Add function to CANCEL BUTTON
-    const cancelBtn = document.querySelector('#cancel-btn');
-    
-    if(isEditing){
-        //Set start-time and end-time values to the selects
-        document.querySelector('#opening-time').value = managedBranch.openingTime;
-        document.querySelector('#closing-time').value = managedBranch.closingTime;
+  return optionsHTML;
+}
 
-        //Add function to EDIT BUTTON - enable all input elements
-        document.querySelector('#edit-btn').onclick = () => {
-            enableForm();
-        }
+async function getInputTemplate(branch, tempBranchList) {
+  const openingTimeOptionList = tradingHourOptionsGenerator(9, 12, 15);
+  const closingTimeOptionList = tradingHourOptionsGenerator(15, 17, 15);
+  const inputTemplate = await getTemplate(
+    "branch-template",
+    "#branch-input-template",
+  );
 
-        //disable editing if editing a branch
-        cancelBtn.onclick = () => {
-            //set all values back to the initials
-            document.querySelector('#branch-name').value = managedBranch.name;
-            document.querySelector('#opening-time').value = managedBranch.openingTime;
-            document.querySelector('#closing-time').value = managedBranch.closingTime;
-            document.querySelector('#branch-address').value = managedBranch.address;
-            //disable inputs
-            disableForm();
-        };
+  const templateClone = document.importNode(inputTemplate.content, true);
+  templateClone.querySelector("h2").textContent = branch.name;
+  templateClone.querySelector("input#name").value = branch.name;
+  templateClone.querySelector("select#openingTime").innerHTML =
+    openingTimeOptionList;
+  templateClone.querySelector("select#openingTime").value = branch.openingTime;
+  templateClone.querySelector("select#closingTime").innerHTML =
+    closingTimeOptionList;
+  templateClone.querySelector("select#closingTime").value = branch.closingTime;
+  templateClone.querySelector("input#address").value = branch.address;
 
-        //DELETE BUTTON
-        document.querySelector('#delete-btn').onclick = () => showDeleteAlert(chosenBranch[0].id, chosenBranch[0].name);
-    } else {
-        //enable the form if adding a new branch
-        enableForm();
+  //functional buttons on the header
+  templateClone.querySelector("#close-btn").addEventListener("click", loadPage);
 
-        //close tab if adding a branch
-        cancelBtn.onclick = () => closeManagingTab();
-    }
+  templateClone
+    .querySelector("#cancel-btn")
+    .addEventListener("click", () => openForm(branch.id, tempBranchList));
 
-    //Add function to CONFIRM BUTTON
-    document.querySelector('#confirm-btn').onclick = () => {
-        //get final objects for submitting to db
-        if(checkInputs(document.querySelector('#branch-name').value)){
-            managedBranch.id = '99';
-            managedBranch.name = document.querySelector('#branch-name').value;
-            managedBranch.openingTime = document.querySelector('#opening-time').value;
-            managedBranch.closingTime = document.querySelector('#closing-time').value;
-            managedBranch.address = document.querySelector('#branch-address').value;
-            addEditBranch(managedBranch);
-        }
-    };
+  templateClone
+    .querySelector("#confirm-btn")
+    .addEventListener("click", () => submitForm(branch));
+
+  const col2 = document.querySelector(".col-2");
+  col2.innerHTML = "";
+  if (col2) col2.appendChild(templateClone);
+}
+
+function submitForm(branch) {
+  const inputElems = document.querySelectorAll("input.form-input");
+  const branchClone = { ...branch };
+
+  for (let inputElem of inputElems) {
+    branchClone[inputElem.name] = inputElem.value;
+  }
+  console.log(branchClone);
+  //if (checkInputs(branchClone)) addEditBranch(branchClone);
+}
+
+async function openForm(id, tempBranchList) {
+  const chosenBranch = tempBranchList.find((branch) => branch.id == id);
+  const isEditing = chosenBranch != undefined;
+
+  //instance of the branch/new branch to be managed
+  const branch = isEditing
+    ? { ...chosenBranch }
+    : {
+        id: crypto.randomUUID(),
+        name: "",
+        openingTime: "9:00",
+        closingTime: "17:00",
+        address: "",
+      };
+
+  await getInputTemplate(branch, tempBranchList);
+
+  isEditing ? modifyFormIfEditing(branch) : modifyFormIfAdding();
+}
+
+function modifyFormIfEditing(branch) {
+  const editBtn = document.querySelector("#edit-btn");
+  editBtn.addEventListener("click", () => {
+    enableForm();
+  });
+  editBtn.style.display = "inline";
+
+  const deleteBtn = document.querySelector("#delete-btn");
+  deleteBtn.style.display = "inline";
+  deleteBtn.addEventListener("click", () =>
+    showDeleteAlert(branch.id, branch.name),
+  );
+}
+
+function modifyFormIfAdding() {
+  document.querySelector("h2").textContent = "Adding a new branch";
+  enableForm();
+  const cancelBtn = document.querySelector("#cancel-btn");
+  cancelBtn.textContent = "Reset";
 }
 
 //enable form
-function enableForm(){
-    enableFormEditing();
-    enableSelects();
-    enableInputs();
-    enableLabels();
+function enableForm() {
+  enableFormEditing();
+  enableSelects();
+  enableInputs();
+  enableLabels();
 }
-
-//disable form
-function disableForm(){
-    disableFormEditing(); 
-    disableSelects();
-    disableInputs();
-    disableLabels();
-}
-
-//input validations
-function checkInputs(name){
-    if(name == ''){
-        showNoticeAlert(`Branch name required`, 'failed');
-        return false;
-    }
-    return true;
-}
-
-//add/edit a branch (API connection)
-function addEditBranch(branch){
-    showNoticeAlert(`The branch named <b>${branch.name}</b> has been added/edited`, 'successful')
-    console.log(branch);
-}
-
-
-
-
-
-
-

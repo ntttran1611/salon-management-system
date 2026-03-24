@@ -1,0 +1,76 @@
+<template id="branch-input-template">
+  <div class="title-container">
+    <h2 class="col-title"></h2>
+  </div>
+  <div class="main-func-btns">
+    <button id="edit-btn" class="round-btn edit-btn">
+      <i class="fa-solid fa-pen-to-square fa-lg"></i>
+      <span class="tooltiptext">Edit</span>
+    </button>
+    <button id="delete-btn" class="round-btn delete-btn">
+      <i class="fa-solid fa-trash fa-lg"></i>
+      <span class="tooltiptext">Remove</span>
+    </button>
+    <button class="round-btn close-btn" id="close-btn">
+      <i class="fa-solid fa-xmark fa-xl"></i>
+      <span class="tooltiptext">Close</span>
+    </button>
+  </div>
+  <form class="form">
+    <div class="text-input-container">
+      <label class="form-label" for="name">What is this branch's name?</label
+      ><br />
+      <input
+        class="form-input"
+        maxlength="30"
+        type="text"
+        id="name"
+        name="name"
+        disabled
+        required
+        value=""
+      />
+    </div>
+    <div class="double-inputs">
+      <div class="selection-box">
+        <label class="form-label" for="openingTime">Open at:</label><br />
+        <select
+          class="form-select"
+          name="openingTime"
+          id="openingTime"
+          disabled
+          required
+        ></select>
+      </div>
+      <div class="selection-box">
+        <label class="form-label" for="closingTime">Close at:</label><br />
+        <select
+          class="form-select"
+          name="closingTime"
+          id="closingTime"
+          disabled
+          required
+        ></select>
+      </div>
+    </div>
+    <div class="text-input-container">
+      <label class="form-label" for="address">What is its address?</label><br />
+      <input
+        class="form-input"
+        maxlength="50"
+        type="text"
+        id="address"
+        name="address"
+        disabled
+        required
+        value=""
+      />
+    </div>
+    <div class="confirm-btns">
+      <button type="submit" id="confirm-btn" class="square-btn confirm-btn">
+        Confirm
+      </button>
+      <button id="cancel-btn" class="square-btn cancel-btn">Cancel</button>
+    </div>
+  </form>
+</template>
