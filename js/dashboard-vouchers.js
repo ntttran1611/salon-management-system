@@ -5,7 +5,6 @@ import {
   addEditVoucher,
 } from "../lib/api/voucher-api.js";
 import {
-  enableToggle,
   enableFormEditing,
   enableInputs,
   enableLabels,
@@ -17,7 +16,9 @@ import {
   tableHeaderGenerator,
   animateTwoColLayout,
   viewButtonGenerator,
-} from "../lib/utils/layoutHandler.js";
+} from "../lib/utils/layout-handler.js";
+import { formatMoney } from "../lib/utils/currency.js";
+import { checkIsPriceNumber } from "../lib/utils/data-validation.js";
 
 document.querySelector("#vouchers").addEventListener("click", loadPage);
 
@@ -48,9 +49,10 @@ function buildVoucherTable(tempVouchersList) {
     "Status",
     "Code",
     "Buyer Name",
-    "Price",
-    "Expiry",
-    "Function",
+    "Original value",
+    "Remaining value",
+    "Expiry Date",
+    "View",
   ];
   const tableHeaderNames = tableHeaderGenerator(voucherTableHeaders);
   const tableHeaderElem = document.querySelector("thead");
@@ -69,7 +71,8 @@ function buildVoucherTable(tempVouchersList) {
         },
         { data: "code" },
         { data: "buyer" },
-        { data: "price" },
+        { data: "originalValue" },
+        { data: "remainingValue" },
         { data: "expiry" },
         {
           data: "function",
@@ -90,7 +93,8 @@ function getRowData(tempVouchersList) {
       status: getStatus(voucher),
       code: voucher.code,
       buyer: voucher.buyer,
-      price: voucher.price,
+      originalValue: formatMoney(voucher.originalValueCents),
+      remainingValue: formatMoney(voucher.remainingValueCents),
       expiry: voucher.expiryDate,
       function: voucher.id,
     };
@@ -102,28 +106,30 @@ function getRowData(tempVouchersList) {
 }
 
 async function openForm(id, tempVouchersList) {
+  const today = new Date();
+  const nextThreeYearsFromToday = new Date(
+    today.setFullYear(today.getFullYear() + 3),
+  );
   const chosenVoucher = tempVouchersList.find((voucher) => voucher.id == id);
-  console.log(tempVouchersList.find((voucher) => voucher.id == id));
   let isEditing = chosenVoucher != undefined;
   let voucher = isEditing
     ? { ...chosenVoucher }
     : {
         buyer: "",
-        price: "",
-        issueDate: "",
-        expiryDate: "",
+        issueDate: formatDate(today),
+        expiryDate: formatDate(nextThreeYearsFromToday),
         mobile: "",
         note: "",
-        used: false,
+        originalValueCents: 0,
+        remainingValueCents: 0,
       };
 
-  await getInputTemplate(voucher, tempVouchersList).then();
+  await getInputTemplate(voucher, tempVouchersList);
 
   isEditing ? modifyFormIfEditing(voucher) : modifyFormIfAdding();
 }
 
 async function getInputTemplate(voucher, tempVouchersList) {
-  const today = new Date();
   const col2 = document.querySelector(".col-2");
   const inputTemplate = await getTemplate(
     "vouchers-templates",
@@ -132,17 +138,13 @@ async function getInputTemplate(voucher, tempVouchersList) {
   const templateClone = document.importNode(inputTemplate.content, true);
   templateClone.querySelector("h2").textContent = `Voucher #${voucher.code}`;
   templateClone.querySelector("input#buyer").value = voucher.buyer;
-  templateClone.querySelector("input#price").value = voucher.price;
-  templateClone.querySelector("input#issueDate").value = voucher.issueDate
-    ? voucher.issueDate
-    : formatDate(today);
-
-  //get new issue and expiry dates automatically if adding a new voucher
-  voucher.expiryDate ? today.setFullYear(today.getFullYear() + 3) : null;
-
-  templateClone.querySelector("input#expiryDate").value = voucher.expiryDate
-    ? voucher.expiryDate
-    : formatDate(today);
+  templateClone.querySelector("input#originalValueCents").value = formatMoney(
+    voucher.originalValueCents,
+  );
+  templateClone.querySelector("p#remainingValueCents").textContent =
+    formatMoney(voucher.remainingValueCents);
+  templateClone.querySelector("p#issueDate").textContent = voucher.issueDate;
+  templateClone.querySelector("p#expiryDate").textContent = voucher.expiryDate;
   templateClone.querySelector("input#note").value = voucher.note;
   templateClone.querySelector("input#mobile").value = voucher.mobile;
 
@@ -167,13 +169,20 @@ function modifyFormIfAdding() {
   enableForm();
   const cancelBtn = document.querySelector("#cancel-btn");
   cancelBtn.textContent = "Reset";
+  const remainingValueInput = document.querySelector("#remainingValueCents");
+  remainingValueInput.disabled = true;
+  const originalValueInput = document.querySelector("#originalValueCents");
+  originalValueInput.addEventListener("change", (e) =>
+    handleWhenOriginalValueChanged(e),
+  );
 }
 
 function modifyFormIfEditing(voucher) {
   const editBtn = document.querySelector("#edit-btn");
   editBtn.addEventListener("click", () => {
     enableForm();
-    getStatus(voucher) === "active" && enableToggle();
+    const originalValueInput = document.querySelector("#originalValueCents");
+    originalValueInput.disabled = true;
   });
   editBtn.style.display = "inline";
 
@@ -182,34 +191,31 @@ function modifyFormIfEditing(voucher) {
   deleteBtn.addEventListener("click", () =>
     showDeleteAlert(voucher.id, voucher.code),
   );
+}
 
-  //this should only work when changing from 'active' to 'used' status
-  document.querySelector(".toggle").onclick = (e) =>
-    handledToggleValueChanged(e, voucher);
+function handleWhenOriginalValueChanged(e) {
+  const remainingValueInput = document.querySelector("#remainingValueCents");
+  const input = e.target.value;
+  if (checkIsPriceNumber(input)) {
+    remainingValueInput.textContent = formatMoney(parseFloat(input) * 100);
+    e.target.value = formatMoney(parseFloat(input) * 100);
+  } else {
+    remainingValueInput.textContent = "0.00";
+    e.target.value = "0.00";
+  }
 }
 
 function submitForm(voucher) {
-  const inputElems = document.querySelectorAll(".form-input");
+  const inputElems = document.querySelectorAll("input.form-input");
+  const textValue = document.querySelector("p.#remainingValueCents");
   const voucherClone = { ...voucher };
+  console.log(voucher);
 
   for (let inputElem of inputElems) {
     voucherClone[inputElem.name] = inputElem.value;
   }
-
+  voucherClone[textValue.id] = textValue.textContent;
   if (checkInputs(voucherClone)) addEditVoucher(voucherClone);
-}
-
-//handle toggle's value changed
-function handledToggleValueChanged(evt, voucher) {
-  const toggle = document.querySelector(".toggle");
-  if (toggle.className.includes("enabled")) {
-    if (evt.target.id == "toggle-active") {
-      voucher.used = false;
-    } else if (evt.target.id == "toggle-inactive") {
-      voucher.used = true;
-    }
-    setVoucherStatus(voucher);
-  }
 }
 
 //add voucher status to the form

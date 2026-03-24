@@ -2,8 +2,7 @@
 /*Text Input*/
 .form-input {
   margin: 10px 0 10px 0;
-  font-family: "Cabin", sans-serif;
-  font-size: 14px;
+  font-size: 100%;
   font-weight: 400;
   font-style: normal;
   width: 100%;
@@ -20,8 +19,7 @@
 }
 
 .table-input {
-  font-family: "Cabin", sans-serif;
-  font-size: 14px;
+  font-size: 100%;
   font-weight: 400;
   font-style: normal;
   width: 100%;
@@ -29,6 +27,12 @@
   background-color: transparent;
   padding: 5px 0 5px 0;
   margin: -5px 0 -5px 0;
+}
+
+p.form-value-text {
+  font-size: 100%;
+  color: var(--dark-green);
+  font-weight: 600;
 }
 
 .table-input:focus {
@@ -59,7 +63,6 @@ select::-webkit-scrollbar {
 .form-select {
   width: 100%;
   margin: 10px 0 10px 0;
-  font-family: "Cabin", sans-serif;
   font-size: 14px;
   font-weight: 400;
   font-style: normal;
@@ -72,7 +75,6 @@ select::-webkit-scrollbar {
 .table-select {
   background-color: transparent;
   width: 100%;
-  font-family: "Cabin", sans-serif;
   font-size: 14px;
   font-weight: 400;
   font-style: normal;
@@ -113,11 +115,10 @@ select::-webkit-scrollbar {
 }
 
 /*Labels/Form texts*/
-.form-label {
-  color: var(--grey);
-  font-family: "Cabin", sans-serif;
-  font-size: 16px;
-  font-weight: 600;
+label {
+  color: #494949;
+  font-size: 100%;
+  font-weight: 500;
   font-style: normal;
 }
 

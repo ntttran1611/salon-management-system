@@ -2,7 +2,7 @@ import { Bills } from "../data/bill-list.js";
 import { serviceList } from "../data/service-list.js";
 import { StaffList } from "../data/staff-list.js";
 import { Bill } from "../lib/api/bill.js";
-import { getStringFormat } from "../lib/functions/shared.js";
+import { checkDollarStringFormat } from "../lib/utils/currency.js";
 import {
   showDeleteAlert,
   showNoticeAlert,
@@ -128,13 +128,13 @@ function handleServiceOptionChanged(billObj) {
       const totalRow = document.querySelector(`#total-${serviceIndex}`);
       const discountRow = document.querySelector(`#discount-${serviceIndex}`);
       //set relevant text outputs
-      priceRow.textContent = getStringFormat(service.price);
-      totalRow.textContent = getStringFormat(
+      priceRow.textContent = checkDollarStringFormat(service.price);
+      totalRow.textContent = checkDollarStringFormat(
         (parseFloat(service.price) - parseFloat(discountRow.value)).toFixed(2),
       );
       //set the chosen service to the bill object
       billObj.setServiceId(serviceIndex, parseInt(e.target.value));
-      totalBillText.textContent = `${getStringFormat(billObj.getTotal(tempServiceList))}`;
+      totalBillText.textContent = `${checkDollarStringFormat(billObj.getTotal(tempServiceList))}`;
     };
   }
 }
@@ -149,13 +149,13 @@ function handleDiscountChanged(billObj) {
         const priceRow = document.querySelector(`#price-${serviceIndex}`);
         const totalRow = document.querySelector(`#total-${serviceIndex}`);
         const totalBillText = document.querySelector("#total");
-        if (getStringFormat(e.target.value)) {
-          totalRow.textContent = getStringFormat(
+        if (checkDollarStringFormat(e.target.value)) {
+          totalRow.textContent = checkDollarStringFormat(
             (
               parseFloat(priceRow.textContent) - parseFloat(e.target.value)
             ).toFixed(2),
           );
-          e.target.value = getStringFormat(e.target.value);
+          e.target.value = checkDollarStringFormat(e.target.value);
         } else {
           showNoticeAlert(
             "Invalid input. Correct format: (e.g.) 16, 16.00 or 16.0",
@@ -165,7 +165,7 @@ function handleDiscountChanged(billObj) {
           e.target.value = "0.00";
         }
         billObj.setServiceDiscount(serviceIndex, parseFloat(e.target.value));
-        totalBillText.textContent = `${getStringFormat(billObj.getTotal(tempServiceList))}`;
+        totalBillText.textContent = `${checkDollarStringFormat(billObj.getTotal(tempServiceList))}`;
       } else {
         e.target.value = "0.00";
       }
@@ -263,7 +263,7 @@ function generateBillContent(billObj) {
             </tbody>
         </table>
         <div class="bill-footer">
-            <span style="margin-left: 20px">Sub total: <b id="total" style="color: #BBA366">${getStringFormat(billObj.getTotal(tempServiceList))}</b> | Status: <b style="color: ${billObj.getStatus() ? "#4C7A6F" : "#C97C82"}">${billObj.getStatus() ? "Paid" : "Unpaid"}</b></span>
+            <span style="margin-left: 20px">Sub total: <b id="total" style="color: #BBA366">${checkDollarStringFormat(billObj.getTotal(tempServiceList))}</b> | Status: <b style="color: ${billObj.getStatus() ? "#4C7A6F" : "#C97C82"}">${billObj.getStatus() ? "Paid" : "Unpaid"}</b></span>
             <div style="display: flex; margin-right: 20px; margin-bottom: 13px">
                 <button id="check-out-btn" class="square-btn confirm-btn">${billObj.getStatus() ? "Uncheck this bill" : "Check out"}</button>
                 <button id="bill-delete-btn" class="square-btn cancel-btn">Delete</button>
@@ -295,10 +295,10 @@ function getRows(billObj) {
     );
     rowContent += `<tr>
             <td><select id="service-${i}" class="table-select service" ${billObj.getStatus() ? "disabled" : ""}>${serviceOptions}</select></td>
-            <td id="price-${i}">${getStringFormat(service.price)}</td>
+            <td id="price-${i}">${checkDollarStringFormat(service.price)}</td>
             <td><select id="staff-${i}" class="table-select staff" ${billObj.getStatus() ? "disabled" : ""}>${staffOptions}</select></td>
-            <td><input class="table-input discount" type="text" name="bill-discount" id="discount-${i}" value='${billServices[i].discount == 0 ? "0.00" : getStringFormat(billServices[i].discount)}' placeholder="0.00" ${billObj.getStatus() ? "disabled" : ""}></td>
-            <td id="total-${i}">${getStringFormat(parseFloat(service.price).toFixed(2) - parseFloat(billServices[i].discount).toFixed(2))}</td>
+            <td><input class="table-input discount" type="text" name="bill-discount" id="discount-${i}" value='${billServices[i].discount == 0 ? "0.00" : checkDollarStringFormat(billServices[i].discount)}' placeholder="0.00" ${billObj.getStatus() ? "disabled" : ""}></td>
+            <td id="total-${i}">${checkDollarStringFormat(parseFloat(service.price).toFixed(2) - parseFloat(billServices[i].discount).toFixed(2))}</td>
             <td><input class="table-input note" type="text" name="bill-note" id="note-${i}" value='${billServices[i].note == "" ? "" : billServices[i].note}' placeholder="Enter something to describe this bill" ${billObj.getStatus() ? "disabled" : ""}></td>
             <td>
                 <button id="${i}" class="round-btn delete-table-btn " ${billObj.getStatus() ? "disabled" : ""}>

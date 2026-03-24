@@ -17,60 +17,50 @@
     </button>
   </div>
   <form class="form">
+    <div class="text-input-container">
+      <label class="form-label" for="buyer">What is the buyer name?</label
+      ><br />
+      <input
+        class="form-input"
+        maxlength="20"
+        type="text"
+        id="buyer"
+        name="buyer"
+        disabled
+        required
+        value=""
+      />
+    </div>
     <div class="double-inputs">
       <div class="text-input-container half">
-        <label class="form-label" for="buyer">What is the buyer name?</label
+        <label class="form-label" for="originalValueCents"
+          >Voucher original value:</label
         ><br />
         <input
           class="form-input"
-          maxlength="20"
           type="text"
-          id="buyer"
-          name="buyer"
+          id="originalValueCents"
+          name="originalValueCents"
           disabled
           required
           value=""
         />
       </div>
       <div class="text-input-container half">
-        <label class="form-label" for="price">Amount:</label><br />
-        <input
-          class="form-input"
-          type="text"
-          id="price"
-          name="price"
-          disabled
-          required
-          value=""
-        />
+        <label class="form-label" for="remainingValueCents"
+          >Voucher remaining value:</label
+        ><br />
+        <p class="form-value-text" id="remainingValueCents"></p>
       </div>
     </div>
     <div class="double-inputs">
       <div class="text-input-container half">
         <label class="form-label" for="issueDate">Date of issue:</label><br />
-        <input
-          class="form-input"
-          maxlength="10"
-          type="text"
-          id="issueDate"
-          name="issueDate"
-          disabled
-          required
-          value=""
-        />
+        <p class="form-value-text" id="issueDate"></p>
       </div>
       <div class="text-input-container half">
         <label class="form-label" for="expiryDate">Expired date:</label><br />
-        <input
-          class="form-input"
-          maxlength="10"
-          type="text"
-          id="expiryDate"
-          name="expiryDate"
-          disabled
-          required
-          value=""
-        />
+        <p class="form-value-text" id="expiryDate"></p>
       </div>
     </div>
     <div class="double-inputs">

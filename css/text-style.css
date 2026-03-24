@@ -1,9 +1,12 @@
 /*TEXT*/
-.note-lg {
-  display: flex;
-  justify-content: center;
+p {
   font-size: 100%;
   font-weight: 400;
+  text-align: start;
+}
+p.note-lg {
+  display: flex;
+  justify-content: center;
   font-style: normal;
   font-variation-settings: "wdth" 100;
   color: #989898;
