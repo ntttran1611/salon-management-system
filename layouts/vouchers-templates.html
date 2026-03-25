@@ -50,23 +50,27 @@
         <label class="form-label" for="remainingValueCents"
           >Voucher remaining value:</label
         ><br />
-        <p class="form-value-text" id="remainingValueCents"></p>
+        <p
+          class="form-value-text"
+          name="remainingValueCents"
+          id="remainingValueCents"
+        ></p>
       </div>
     </div>
     <div class="double-inputs">
       <div class="text-input-container half">
         <label class="form-label" for="issueDate">Date of issue:</label><br />
-        <p class="form-value-text" id="issueDate"></p>
+        <p class="form-value-text" name="issueDate" id="issueDate"></p>
       </div>
       <div class="text-input-container half">
         <label class="form-label" for="expiryDate">Expired date:</label><br />
-        <p class="form-value-text" id="expiryDate"></p>
+        <p class="form-value-text" name="expiryDate" id="expiryDate"></p>
       </div>
     </div>
     <div class="double-inputs">
       <div class="toggle-container">
-        <label class="form-label">Status:</label><br />
-        <div class="toggle">
+        <label class="form-label" for="status">Status:</label><br />
+        <div name="status" id="status" class="toggle">
           <div class="toggle-btn active" id="toggle-active">Valid</div>
           <div class="toggle-btn" id="toggle-inactive">Used</div>
           <div class="toggle-btn" id="toggle-warning">Expired</div>

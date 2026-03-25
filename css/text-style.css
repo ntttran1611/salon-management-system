@@ -40,7 +40,8 @@ h2.col-title {
 }
 
 h4#modal-header-text {
-  color: #474747;
+  color: whitesmoke;
+  font-weight: 500;
   margin-left: 20px;
 }
 

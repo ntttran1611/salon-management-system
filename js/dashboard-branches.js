@@ -118,13 +118,15 @@ async function getInputTemplate(branch, tempBranchList) {
   //functional buttons on the header
   templateClone.querySelector("#close-btn").addEventListener("click", loadPage);
 
-  templateClone
-    .querySelector("#cancel-btn")
-    .addEventListener("click", () => openForm(branch.id, tempBranchList));
+  templateClone.querySelector("#cancel-btn").addEventListener("click", (e) => {
+    e.preventDefault();
+    openForm(branch.id, tempBranchList);
+  });
 
-  templateClone
-    .querySelector("#confirm-btn")
-    .addEventListener("click", () => submitForm(branch));
+  templateClone.querySelector("#confirm-btn").addEventListener("click", (e) => {
+    e.preventDefault();
+    submitForm(branch);
+  });
 
   const col2 = document.querySelector(".col-2");
   col2.innerHTML = "";
@@ -138,8 +140,7 @@ function submitForm(branch) {
   for (let inputElem of inputElems) {
     branchClone[inputElem.name] = inputElem.value;
   }
-  console.log(branchClone);
-  //if (checkInputs(branchClone)) addEditBranch(branchClone);
+  if (checkInputs(branchClone)) addEditBranch(branchClone);
 }
 
 async function openForm(id, tempBranchList) {

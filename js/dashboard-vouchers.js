@@ -140,13 +140,15 @@ async function getInputTemplate(voucher, tempVouchersList) {
   //functional buttons on the header
   templateClone.querySelector("#close-btn").addEventListener("click", loadPage);
 
-  templateClone
-    .querySelector("#cancel-btn")
-    .addEventListener("click", () => openForm(voucher.id, tempVouchersList));
+  templateClone.querySelector("#cancel-btn").addEventListener("click", (e) => {
+    e.preventDefault();
+    openForm(voucher.id, tempVouchersList);
+  });
 
-  templateClone
-    .querySelector("#confirm-btn")
-    .addEventListener("click", () => submitForm(voucher));
+  templateClone.querySelector("#confirm-btn").addEventListener("click", (e) => {
+    e.preventDefault();
+    submitForm(voucher);
+  });
 
   col2.innerHTML = "";
   if (col2) col2.appendChild(templateClone);
