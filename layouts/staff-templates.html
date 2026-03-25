@@ -1,0 +1,82 @@
+<template id="staff-input-template">
+  <div class="title-container">
+    <h2 class="col-title"></h2>
+  </div>
+  <div class="main-func-btns">
+    <button id="edit-btn" class="round-btn edit-btn">
+      <i class="fa-solid fa-pen-to-square fa-lg"></i>
+      <span class="tooltiptext">Edit</span>
+    </button>
+    <button id="delete-btn" class="round-btn delete-btn">
+      <i class="fa-solid fa-trash fa-lg"></i>
+      <span class="tooltiptext">Remove</span>
+    </button>
+    <button class="round-btn close-btn" id="close-btn">
+      <i class="fa-solid fa-xmark fa-xl"></i>
+      <span class="tooltiptext">Close</span>
+    </button>
+  </div>
+  <form class="form">
+    <div class="double-inputs">
+      <div class="text-input-container half">
+        <label class="form-label" for="firstName">First name:</label><br />
+        <input
+          class="form-input"
+          maxlength="20"
+          type="text"
+          id="firstName"
+          name="firstName"
+          disabled
+          required
+          value=""
+        />
+      </div>
+      <div class="text-input-container half">
+        <label class="form-label" for="lastName">Last name:</label><br />
+        <input
+          class="form-input"
+          maxlength="20"
+          type="text"
+          id="lastName"
+          name="lastName"
+          disabled
+          required
+          value=""
+        />
+      </div>
+    </div>
+    <div class="double-inputs">
+      <div class="toggle-container">
+        <label class="form-label" for="active">Status:</label><br />
+        <div class="toggle" name="status" id="status">
+          <div class="toggle-btn active" id="toggle-active">Active</div>
+          <div class="toggle-btn" id="toggle-inactive">Inactive</div>
+        </div>
+      </div>
+      <div class="text-input-container half">
+        <label class="form-label" for="note">Note:</label><br />
+        <input
+          class="form-input"
+          maxlength="100"
+          type="text"
+          id="note"
+          name="note"
+          disabled
+          required
+          value=""
+        />
+      </div>
+    </div>
+    <div class="confirm-btns">
+      <button
+        id="confirm-btn"
+        type="submit"
+        value="submit"
+        class="square-btn confirm-btn"
+      >
+        Confirm
+      </button>
+      <button id="cancel-btn" class="square-btn cancel-btn">Cancel</button>
+    </div>
+  </form>
+</template>
