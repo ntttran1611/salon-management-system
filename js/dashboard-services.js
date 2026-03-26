@@ -14,7 +14,7 @@ import {
   disableLabels,
 } from "../lib/functions/shared.js";
 import { showDeleteAlert, showNoticeAlert } from "../lib/components/dialog.js";
-import { getServiceList } from "../lib/api/service-api.js";
+import { addEditService, getServiceList } from "../lib/api/service-api.js";
 import { getBranchList } from "../lib/api/branch-api.js";
 import {
   animateTwoColLayout,
@@ -23,7 +23,8 @@ import {
   tableHeaderGenerator,
   viewButtonGenerator,
 } from "../lib/utils/layout-handler.js";
-import { formatMoney } from "../lib/utils/currency.js";
+import { formatMoney, parsePriceCents } from "../lib/utils/currency.js";
+import { checkIsPriceNumber } from "../lib/utils/data-validation.js";
 
 const serviceTypes = ["Nails", "Eyelashes", "Waxing"];
 //get service and branch lists from db
@@ -124,9 +125,12 @@ async function getInputTemplate(service, tempServiceList) {
 
   templateClone.querySelector("input#title").value = service.title;
   templateClone.querySelector("select#type").value = service.type;
-  templateClone.querySelector("input#price").value = formatMoney(
+  templateClone.querySelector("input#priceCents").value = formatMoney(
     service.priceCents,
   );
+  templateClone
+    .querySelector("input#priceCents")
+    .addEventListener("change", (e) => handlePriceChanged(e));
   templateClone.querySelector("input#desc").value = service.description;
   const branchOptionList = getBranchOptionList();
   const branchSelect = templateClone.querySelector("#availableAt");
@@ -176,7 +180,6 @@ function modifyFormIfAdding() {
   cancelBtn.textContent = "Reset";
 }
 
-//add branch options to the option container
 function displaySelectedBranches(selectedBranchIds) {
   const tempBranchList = getBranchList();
   const optionContainer = document.querySelector("#selected-branches");
@@ -217,6 +220,7 @@ function handleSelectedBranchChanged(selectedBranchIds, branchId) {
     enableMultipleSelect();
   }
 }
+
 //remove an option out of the chosen branches when it is clicked
 function handleSelectedBranchClicked(enabled, branchId, selectedBranchIds) {
   if (enabled) {
@@ -227,7 +231,15 @@ function handleSelectedBranchClicked(enabled, branchId, selectedBranchIds) {
   }
 }
 
-//enable form
+function handlePriceChanged(e) {
+  const input = e.target.value;
+  if (checkIsPriceNumber(input)) {
+    e.target.value = formatMoney(parsePriceCents(input));
+  } else {
+    e.target.value = "0.00";
+  }
+}
+
 function enableForm() {
   enableFormEditing();
   enableInputs();
@@ -236,4 +248,14 @@ function enableForm() {
   enableMultipleSelect();
 }
 
-function submitForm(service) {}
+function submitForm(service) {
+  const inputElems = document.querySelectorAll(".form-input");
+  const typeSelectElem = document.querySelector("select#type");
+  const serviceClone = { ...service };
+  for (let inputElem of inputElems) {
+    serviceClone[inputElem.name] = inputElem.value;
+  }
+  serviceClone.type = typeSelectElem.value;
+
+  addEditService(serviceClone);
+}

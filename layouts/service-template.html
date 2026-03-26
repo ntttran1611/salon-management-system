@@ -35,19 +35,20 @@
       <div class="selection-box">
         <label class="form-label" for="type">Service type:</label><br />
         <select class="form-select" name="type" id="type" disabled required>
+          <option value="">Select an option</option>
           <option value="Nails">Nails</option>
           <option value="Eyelashes">Eyelashes</option>
           <option value="Waxing">Waxing</option>
         </select>
       </div>
       <div class="text-input-container half">
-        <label class="form-label" for="price">How much it is?</label><br />
+        <label class="form-label" for="priceCents">How much it is?</label><br />
         <input
           class="form-input short"
           maxlength="10"
           type="text"
-          id="price"
-          name="price"
+          id="priceCents"
+          name="priceCents"
           disabled
           required
           value=""
@@ -64,7 +65,7 @@
           disabled
           required
         >
-          <option value="">Select a branch to add</option>
+          <option value="">Select a branch</option>
         </select>
         <div
           id="selected-branches"

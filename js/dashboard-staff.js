@@ -154,7 +154,7 @@ function submitForm(staff) {
   for (let inputElem of inputElems) {
     staffClone[inputElem.name] = inputElem.value;
   }
-  if (checkInputs(staffClone)) addEditStaff(staffClone);
+  addEditStaff(staffClone);
 }
 
 //add staff status to the form

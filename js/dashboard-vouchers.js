@@ -18,7 +18,7 @@ import {
   viewButtonGenerator,
   buildTwoColLayout,
 } from "../lib/utils/layout-handler.js";
-import { formatMoney } from "../lib/utils/currency.js";
+import { formatMoney, parsePriceCents } from "../lib/utils/currency.js";
 import { checkIsPriceNumber } from "../lib/utils/data-validation.js";
 
 document.querySelector("#vouchers").addEventListener("click", loadPage);
@@ -188,8 +188,8 @@ function handleWhenOriginalValueChanged(e) {
   const remainingValueInput = document.querySelector("#remainingValueCents");
   const input = e.target.value;
   if (checkIsPriceNumber(input)) {
-    remainingValueInput.textContent = formatMoney(parseFloat(input) * 100);
-    e.target.value = formatMoney(parseFloat(input) * 100);
+    remainingValueInput.textContent = formatMoney(parsePriceCents(input));
+    e.target.value = formatMoney(parsePriceCents(input));
   } else {
     remainingValueInput.textContent = "0.00";
     e.target.value = "0.00";
@@ -205,7 +205,7 @@ function submitForm(voucher) {
     voucherClone[inputElem.name] = inputElem.value;
   }
   voucherClone[textValue.id] = textValue.textContent;
-  if (checkInputs(voucherClone)) addEditVoucher(voucherClone);
+  addEditVoucher(voucherClone);
 }
 
 //add voucher status to the form

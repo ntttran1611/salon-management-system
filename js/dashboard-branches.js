@@ -140,7 +140,7 @@ function submitForm(branch) {
   for (let inputElem of inputElems) {
     branchClone[inputElem.name] = inputElem.value;
   }
-  if (checkInputs(branchClone)) addEditBranch(branchClone);
+  addEditBranch(branchClone);
 }
 
 async function openForm(id, tempBranchList) {
