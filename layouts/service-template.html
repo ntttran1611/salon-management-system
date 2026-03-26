@@ -1,0 +1,101 @@
+<template id="input-service-template">
+  <div class="title-container">
+    <h2 class="col-title"></h2>
+  </div>
+  <div class="main-func-btns">
+    <button id="edit-btn" class="round-btn edit-btn">
+      <i class="fa-solid fa-pen-to-square fa-lg"></i>
+      <span class="tooltiptext">Edit</span>
+    </button>
+    <button id="delete-btn" class="round-btn delete-btn">
+      <i class="fa-solid fa-trash fa-lg"></i>
+      <span class="tooltiptext">Remove</span>
+    </button>
+    <button class="round-btn close-btn" id="close-btn">
+      <i class="fa-solid fa-xmark fa-xl"></i>
+      <span class="tooltiptext">Close</span>
+    </button>
+  </div>
+  <form class="form">
+    <div class="text-input-container">
+      <label class="form-label" for="title">What is this service's name?</label
+      ><br />
+      <input
+        class="form-input"
+        maxlength="30"
+        type="text"
+        id="title"
+        name="title"
+        disabled
+        required
+        value=""
+      />
+    </div>
+    <div class="double-inputs">
+      <div class="selection-box">
+        <label class="form-label" for="type">Service type:</label><br />
+        <select class="form-select" name="type" id="type" disabled required>
+          <option value="Nails">Nails</option>
+          <option value="Eyelashes">Eyelashes</option>
+          <option value="Waxing">Waxing</option>
+        </select>
+      </div>
+      <div class="text-input-container half">
+        <label class="form-label" for="price">How much it is?</label><br />
+        <input
+          class="form-input short"
+          maxlength="10"
+          type="text"
+          id="price"
+          name="price"
+          disabled
+          required
+          value=""
+        />
+      </div>
+    </div>
+    <div class="double-inputs">
+      <div class="selection-box">
+        <label class="form-label" for="availableAt">Available at:</label><br />
+        <select
+          class="form-select"
+          name="availableAt"
+          id="availableAt"
+          disabled
+          required
+        >
+          <option value="">Select a branch to add</option>
+        </select>
+        <div
+          id="selected-branches"
+          class="option-container"
+          name="availableAt"
+        ></div>
+      </div>
+      <div class="text-input-container half">
+        <label class="form-label" for="desc">Description:</label><br />
+        <input
+          class="form-input short"
+          maxlength="200"
+          type="text"
+          id="desc"
+          name="desc"
+          disabled
+          required
+          value=""
+        />
+      </div>
+    </div>
+    <div class="confirm-btns">
+      <button
+        type="submit"
+        value="submit"
+        id="confirm-btn"
+        class="square-btn confirm-btn"
+      >
+        Confirm
+      </button>
+      <button id="cancel-btn" class="square-btn cancel-btn">Cancel</button>
+    </div>
+  </form>
+</template>
