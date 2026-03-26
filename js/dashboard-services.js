@@ -1,19 +1,11 @@
-import { serviceList } from "../data/service-list.js";
-import { Branches } from "../data/branch-list.js";
 import {
-  closeManagingTab,
   enableMultipleSelect,
-  disableMultipleSelect,
   enableFormEditing,
-  disableFormEditing,
   enableInputs,
-  disableInputs,
   enableSelects,
-  disableSelects,
   enableLabels,
-  disableLabels,
 } from "../lib/functions/shared.js";
-import { showDeleteAlert, showNoticeAlert } from "../lib/components/dialog.js";
+import { showDeleteAlert } from "../lib/components/dialog.js";
 import { addEditService, getServiceList } from "../lib/api/service-api.js";
 import { getBranchList } from "../lib/api/branch-api.js";
 import {
@@ -25,11 +17,6 @@ import {
 } from "../lib/utils/layout-handler.js";
 import { formatMoney, parsePriceCents } from "../lib/utils/currency.js";
 import { checkIsPriceNumber } from "../lib/utils/data-validation.js";
-
-const serviceTypes = ["Nails", "Eyelashes", "Waxing"];
-//get service and branch lists from db
-const tempServicesList = serviceList;
-const tempBranchesList = Branches;
 
 document.querySelector("#services").addEventListener("click", loadPage);
 

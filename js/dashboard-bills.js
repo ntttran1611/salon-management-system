@@ -1,13 +1,17 @@
 import { Bills } from "../data/bill-list.js";
 import { serviceList } from "../data/service-list.js";
 import { StaffList } from "../data/staff-list.js";
-import { Bill } from "../lib/api/bill.js";
+import { Bill, getBillList } from "../lib/api/bill-api.js";
 import { checkDollarStringFormat } from "../lib/utils/currency.js";
 import {
   showDeleteAlert,
   showNoticeAlert,
   showCheckOutDialog,
 } from "../lib/components/dialog.js";
+import {
+  animateTwoColLayout,
+  getTemplate,
+} from "../lib/utils/layout-handler.js";
 
 document.querySelector("#bills").addEventListener("click", loadPage);
 window.onload = loadPage;
@@ -17,54 +21,66 @@ const tempServiceList = serviceList;
 const tempStaffList = StaffList;
 
 //display all bills and the first bill when the page is load
-function loadPage() {
-  //get all bills
-  const billList = getBillList();
+async function loadPage() {
   if (document.querySelector("#bills").className.includes("active")) {
-    document.querySelector("main").innerHTML = `
-            <div class="col-1 sm">
-            <div class="title-container">
-            <i class="fa-solid fa-code-branch"></i>
-              <h2 class="col-title"> Kingston</h2>
-            </div>
-                ${billList}
-            </div>
-            <div class="col-2 lg">
-              <div class="title-container">
-                <h2 class="col-title">No bill selected</h2>
-              </div>
-              <p class="note-lg">No bill selected</>
-            </div>
-        `;
+    const tempBillList = getBillList(1);
+    await buildTwoColLayoutForBillTab(tempBillList);
+    animateTwoColLayout();
   }
+}
 
-  const billItems = document.querySelectorAll(".list-item");
-  for (let billItem of billItems) {
-    billItem.onclick = () => handleListItemClicked(billItem.id);
-  }
+async function buildTwoColLayoutForBillTab(tempBillList) {
+  const getTwoColTemplate = await getTemplate(
+    "two-col-template",
+    "#two-col-template",
+  );
 
-  //add onShow id to trigger animations
-  setTimeout(() => {
-    document.querySelector(".col-1").id = "onShow";
-    document.querySelector(".col-2").id = "onShow";
-  }, 1);
+  const templateClone = document.importNode(getTwoColTemplate.content, true);
+  templateClone.querySelector(".col-1").className += " sm";
+  templateClone.querySelector(".col-2").className += " lg";
+  templateClone.querySelector(".col-1").innerHTML = "";
+  templateClone
+    .querySelector(".col-1")
+    .appendChild(getBillListHTML(tempBillList));
+
+  document.querySelector("main").innerHTML = "";
+  document.querySelector("main").appendChild(templateClone);
 }
 
 //turn all bills to html list
-function getBillList() {
-  if (tempBillsList.length == 0) {
-    return `<p class="note-lg">No bill recorded</>`;
+function getBillListHTML(tempBillList) {
+  let billContent = null;
+  if (tempBillList.length == 0) {
+    billContent = document.createElement("p");
+    billContent.className = "note-lg";
+    billContent.textContent = "No bill recoreded";
   } else {
-    return `<div class="vertical-list">${tempBillsList
-      .map((bill) => {
-        return `<div id=${bill.id} class="list-item ${bill.paid ? `checked` : ""}">
-                        <div class="choose-indicator"></div>
-                        <div class="list-item-content" id=${bill.id}>${bill.id} - ${bill.cusName}</div>
-                    </div>`;
-      })
-      .join("")}
-        </div>`;
+    billContent = document.createElement("div");
+    billContent.className = "vertical-list";
+    billContent.innerHTML = "";
+    for (let bill of tempBillList) {
+      const indicatorElem = document.createElement("div");
+      indicatorElem.className = "choose-indicator";
+
+      const itemContentElem = document.createElement("p");
+      itemContentElem.className = "list-item-content";
+      itemContentElem.id = bill.id;
+      itemContentElem.textContent = `${bill.id} - ${bill.cusName}`;
+
+      const itemContainerElem = document.createElement("div");
+      itemContainerElem.className = `list-item ${bill.paid ? `checked` : ""}`;
+      itemContainerElem.id = bill.id;
+      itemContainerElem.addEventListener("click", () =>
+        handleListItemClicked(bill.id),
+      );
+
+      itemContainerElem.appendChild(indicatorElem);
+      itemContainerElem.appendChild(itemContentElem);
+
+      billContent.appendChild(itemContainerElem);
+    }
   }
+  return billContent;
 }
 
 //display a bill's info when a list item is clicked
