@@ -5,14 +5,14 @@ export const Bills = [
     services: [
       {
         id: 0,
-        discount: 0,
+        discountCents: 0,
         serviceId: 2,
         staffId: 4,
         note: "",
       },
       {
         id: 1,
-        discount: 0,
+        discountCents: 0,
         serviceId: 4,
         staffId: 6,
         note: "",
@@ -37,14 +37,14 @@ export const Bills = [
     services: [
       {
         id: 0,
-        discount: 0,
+        discountCents: 0,
         serviceId: 1,
         staffId: -1,
         note: "",
       },
       {
         id: 1,
-        discount: 0,
+        discountCents: 0,
         serviceId: 2,
         staffId: -1,
         note: "",
@@ -69,7 +69,7 @@ export const Bills = [
     services: [
       {
         id: 0,
-        discount: 0,
+        discountCents: 0,
         serviceId: 2,
         staffId: -1,
         note: "",
@@ -94,7 +94,7 @@ export const Bills = [
     services: [
       {
         id: 0,
-        discount: 0,
+        discountCents: 0,
         serviceId: 4,
         staffId: -1,
         note: "",
@@ -119,14 +119,14 @@ export const Bills = [
     services: [
       {
         id: 0,
-        discount: 0,
+        discountCents: 0,
         serviceId: 3,
         staffId: -1,
         note: "",
       },
       {
         id: 1,
-        discount: 0,
+        discountCents: 0,
         serviceId: 8,
         staffId: -1,
         note: "",
@@ -151,14 +151,14 @@ export const Bills = [
     services: [
       {
         id: 0,
-        discount: 0,
+        discountCents: 0,
         serviceId: 5,
         staffId: -1,
         note: "",
       },
       {
         id: 1,
-        discount: 0,
+        discountCents: 0,
         serviceId: 2,
         staffId: -1,
         note: "",
@@ -183,14 +183,14 @@ export const Bills = [
     services: [
       {
         id: 0,
-        discount: 0,
+        discountCents: 0,
         serviceId: 9,
         staffId: -1,
         note: "",
       },
       {
         id: 1,
-        discount: 0,
+        discountCents: 0,
         serviceId: 1,
         staffId: -1,
         note: "",
@@ -215,14 +215,14 @@ export const Bills = [
     services: [
       {
         id: 0,
-        discount: 0,
+        discountCents: 0,
         serviceId: 6,
         staffId: -1,
         note: "",
       },
       {
         id: 1,
-        discount: 0,
+        discountCents: 0,
         serviceId: 2,
         staffId: -1,
         note: "",

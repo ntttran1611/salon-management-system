@@ -15,3 +15,7 @@
 .fa-solid.fa-circle.status.warning {
   color: var(--warning);
 }
+
+.fa-solid.fa-code-branch {
+  margin-right: 5px;
+}

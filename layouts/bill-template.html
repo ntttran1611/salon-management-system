@@ -1,0 +1,27 @@
+<template id="bill-list-item-template">
+  <div id="" class="list-item">
+    <div class="choose-indicator"></div>
+    <p id="" class="list-item-content"></p>
+  </div>
+</template>
+
+<template id="bill-info-template">
+    <div class="title-container">
+        <h2 id="bill-title" class="col-title">
+            <b  class="bill-info-title">Customer name: </b> <span id="bill-cusName"></span>
+            <b class="bill-info-title">Mobile phone: </b> <span id="bill-mobile"></span>
+            <b class="bill-info-title">Entrance time:</b> <span id="bill-time"></span>
+        </h2>
+    </div>
+    <table id="myTable" class="hover" style="width: 100%">
+        <thead></thead>
+        <tbody></tbody>
+    </table>
+    <div class="bill-footer">
+        <span style="margin-left: 20px">Sub total: <b id="total" style="color: #BBA366"></span>
+        <div style="display: flex; margin-right: 20px; margin-bottom: 13px">
+            <button id="check-out-btn" class="square-btn confirm-btn">Check out</button>
+            <button id="bill-delete-btn" class="square-btn cancel-btn">Delete</button>
+        </div>
+    </div>
+</template>

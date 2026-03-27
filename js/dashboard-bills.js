@@ -2,7 +2,7 @@ import { Bills } from "../data/bill-list.js";
 import { serviceList } from "../data/service-list.js";
 import { StaffList } from "../data/staff-list.js";
 import { Bill, getBillList } from "../lib/api/bill-api.js";
-import { checkDollarStringFormat } from "../lib/utils/currency.js";
+import { checkDollarStringFormat, formatMoney } from "../lib/utils/currency.js";
 import {
   showDeleteAlert,
   showNoticeAlert,
@@ -11,7 +11,10 @@ import {
 import {
   animateTwoColLayout,
   getTemplate,
+  tableHeaderGenerator,
 } from "../lib/utils/layout-handler.js";
+import { getServiceList } from "../lib/api/service-api.js";
+import { getStaffList } from "../lib/api/staff-api.js";
 
 document.querySelector("#bills").addEventListener("click", loadPage);
 window.onload = loadPage;
@@ -32,70 +35,272 @@ async function loadPage() {
 async function buildTwoColLayoutForBillTab(tempBillList) {
   const getTwoColTemplate = await getTemplate(
     "two-col-template",
-    "#two-col-template",
+    "#bill-two-col-template",
   );
-
   const templateClone = document.importNode(getTwoColTemplate.content, true);
-  templateClone.querySelector(".col-1").className += " sm";
-  templateClone.querySelector(".col-2").className += " lg";
-  templateClone.querySelector(".col-1").innerHTML = "";
-  templateClone
-    .querySelector(".col-1")
-    .appendChild(getBillListHTML(tempBillList));
-
+  /**FIX THIS: use textCOntent instead */
+  templateClone.querySelector("#bill-list-title").innerHTML =
+    `<i class="fa-solid fa-code-branch"></i> <span>Kingston</span>`;
+  await getBillListContent(
+    tempBillList,
+    templateClone.querySelector("#bill-list"),
+  );
   document.querySelector("main").innerHTML = "";
   document.querySelector("main").appendChild(templateClone);
 }
 
-//turn all bills to html list
-function getBillListHTML(tempBillList) {
-  let billContent = null;
+async function getBillListContent(tempBillList, listNode) {
   if (tempBillList.length == 0) {
-    billContent = document.createElement("p");
-    billContent.className = "note-lg";
-    billContent.textContent = "No bill recoreded";
+    const noteElem = document.createElement("p");
+    noteElem.className = "note-lg";
+    noteElem.textContent = "No bill recoreded";
+    listNode.appendChild(noteElem);
   } else {
-    billContent = document.createElement("div");
-    billContent.className = "vertical-list";
-    billContent.innerHTML = "";
+    listNode.innerHTML = "";
+    let count = 1;
     for (let bill of tempBillList) {
-      const indicatorElem = document.createElement("div");
-      indicatorElem.className = "choose-indicator";
-
-      const itemContentElem = document.createElement("p");
-      itemContentElem.className = "list-item-content";
-      itemContentElem.id = bill.id;
-      itemContentElem.textContent = `${bill.id} - ${bill.cusName}`;
-
-      const itemContainerElem = document.createElement("div");
-      itemContainerElem.className = `list-item ${bill.paid ? `checked` : ""}`;
-      itemContainerElem.id = bill.id;
-      itemContainerElem.addEventListener("click", () =>
-        handleListItemClicked(bill.id),
+      const listItemTemplate = await getTemplate(
+        "bill-template",
+        "#bill-list-item-template",
       );
-
-      itemContainerElem.appendChild(indicatorElem);
-      itemContainerElem.appendChild(itemContentElem);
-
-      billContent.appendChild(itemContainerElem);
+      const listItemClone = document.importNode(listItemTemplate.content, true);
+      listItemClone.querySelector(".list-item").id = bill.id;
+      listItemClone
+        .querySelector(".list-item")
+        .addEventListener("click", async () => {
+          activateIndicator(bill.id);
+          await loadBill(bill);
+        });
+      listItemClone.querySelector(".list-item").className = bill.paid
+        ? "list-item checked"
+        : "list-item";
+      listItemClone.querySelector(".list-item-content").id = bill.id;
+      listItemClone.querySelector(".list-item-content").textContent =
+        `${count} - ${bill.cusName}`;
+      count++;
+      listNode.appendChild(listItemClone);
     }
   }
-  return billContent;
 }
 
-//display a bill's info when a list item is clicked
-function handleListItemClicked(id) {
-  const currentBill = new Bill(tempBillsList.find((bill) => bill.id == id));
-
-  //switch the indicator from white to pink
-  activateIndicator(id);
-
-  loadBill(currentBill);
+async function loadBill(bill) {
+  await buildBillInfoLayout(bill);
+  buildBillTable(bill);
 }
 
-function loadBill(billObj) {
+async function buildBillInfoLayout(bill) {
+  const billInfoTemplate = await getTemplate(
+    "bill-template",
+    "#bill-info-template",
+  );
+
+  const templateClone = document.importNode(billInfoTemplate.content, true);
+  templateClone.querySelector("span#bill-cusName").textContent =
+    ` \u00A0${bill.cusName} | \u00A0`;
+  templateClone.querySelector("span#bill-mobile").textContent =
+    ` \u00A0${bill.mobile} | \u00A0`;
+  templateClone.querySelector("span#bill-time").textContent =
+    ` \u00A0${bill.entranceDate}, ${bill.entranceTime}`;
+
+  document.querySelector(".col-2").innerHTML = "";
+  document.querySelector(".col-2").appendChild(templateClone);
+}
+
+function buildBillTable(bill) {
+  const tableHeaderNames = [
+    "Service",
+    "Price",
+    "Done By",
+    "Discount",
+    "Final price",
+    "Note",
+    "Funcs",
+  ];
+  const tableHeaders = tableHeaderGenerator(tableHeaderNames);
+  document.querySelector("thead").appendChild(tableHeaders);
+
+  const data = getBillTableData(bill);
+  console.log(data);
+  //build the table
+  new DataTable("#myTable", {
+    paging: false,
+    searching: false,
+    info: false,
+    data: data,
+    columns: [
+      {
+        data: "serviceTitle",
+        render: function (data) {
+          return getServiceOptionsForBillTable(data);
+        },
+      },
+      {
+        data: "servicePrice",
+        render: function (data) {
+          return `<p id="price-${data.id}">${data.value}</p>`;
+        },
+      },
+      {
+        data: "serviceStaff",
+        render: function (data) {
+          return getStaffOptionsForBillTable(data);
+        },
+      },
+      {
+        data: "serviceDiscount",
+        render: function (data) {
+          return `<input class="table-input discount" type="text" name="bill-discount" id="discount-${data.id}" value='${data.value}' placeholder="0.00">`;
+        },
+      },
+      {
+        data: "serviceTotal",
+        render: function (data) {
+          return `<p id="total-${data.id}">${data.value}</p>`;
+        },
+      },
+      {
+        data: "serviceNote",
+        render: function (data) {
+          return `<input class="table-input note" type="text" name="bill-note" id="note-${data.id}" value='${data.value}' placeholder="Note"></input>`;
+        },
+      },
+      {
+        data: "serviceFunc",
+        render: function (data) {
+          return `<button id="${data}" class="round-btn delete-table-btn ">
+                    <i class="fa-solid fa-trash fa-xs"></i> 
+                    <span class="tooltiptext">Delete</span>
+                </button> `;
+        },
+      },
+    ],
+  });
+}
+
+function getServiceOptionsForBillTable(data) {
+  const select = document.createElement("select");
+  select.id = `service-${data.id}`;
+  select.className = "table-select service";
+  select.innerHTML = "";
+  const tempServiceList = getServiceList();
+  for (let service of tempServiceList) {
+    const option = document.createElement("option");
+    option.value = service.id;
+    option.textContent = service.title;
+    select.appendChild(option);
+  }
+  select.value = data.value;
+  return select;
+}
+
+function getStaffOptionsForBillTable(data) {
+  const select = document.createElement("select");
+  select.id = `staff-${data.id}`;
+  select.className = "table-select staff";
+  select.innerHTML = "";
+  const tempStaffList = getStaffList();
+  for (let staff of tempStaffList) {
+    const option = document.createElement("option");
+    option.value = staff.id;
+    option.textContent = `${staff.firstName} ${staff.lastName}`;
+    select.appendChild(option);
+  }
+  select.value = data.value;
+  return select;
+}
+
+function getBillTableData(bill) {
+  const data = [];
+  const tempServiceList = getServiceList();
+  for (let billService of bill.services) {
+    const serviceData = tempServiceList.find(
+      (service) => service.id == billService.serviceId,
+    );
+    const rowData = {
+      serviceTitle: { id: billService.id, value: billService.serviceId },
+      servicePrice: {
+        id: billService.id,
+        value: formatMoney(serviceData.priceCents),
+      },
+      serviceStaff: { id: billService.id, value: billService.staffId },
+      serviceDiscount: {
+        id: billService.id,
+        value: formatMoney(billService.discountCents),
+      },
+      serviceTotal: {
+        id: billService.id,
+        value: formatMoney(serviceData.priceCents - billService.discountCents),
+      },
+      serviceNote: { id: billService.id, value: billService.note },
+      serviceFunc: billService.id,
+    };
+
+    data.push(rowData);
+  }
+
+  return data;
+}
+
+//get row content for the service table
+function getRows(billObj) {
+  let rowContent = "";
+  const serviceOptions = tempServiceList
+    .map((service) => {
+      return `<option value=${service.id}>${service.title}</option>`;
+    })
+    .join("");
+  const staffOptions = tempStaffList
+    .map((staff) => {
+      if (staff.active) {
+        return `<option value=${staff.id}>${staff.firstName} ${staff.lastName}</option>`;
+      }
+    })
+    .join("");
+
+  const billServices = billObj.getBillServices();
+  for (let i = 0; i < billServices.length; i++) {
+    const service = serviceList.find(
+      (service) => service.id == billServices[i].serviceId,
+    );
+    rowContent += `<tr>
+            <td><select id="service-${i}" class="table-select service" ${billObj.getStatus() ? "disabled" : ""}>${serviceOptions}</select></td>
+            <td id="price-${i}">${checkDollarStringFormat(service.price)}</td>
+            <td><select id="staff-${i}" class="table-select staff" ${billObj.getStatus() ? "disabled" : ""}>${staffOptions}</select></td>
+            <td><input class="table-input discount" type="text" name="bill-discount" id="discount-${i}" value='${billServices[i].discount == 0 ? "0.00" : checkDollarStringFormat(billServices[i].discount)}' placeholder="0.00" ${billObj.getStatus() ? "disabled" : ""}></td>
+            <td id="total-${i}">${checkDollarStringFormat(parseFloat(service.price).toFixed(2) - parseFloat(billServices[i].discount).toFixed(2))}</td>
+            <td><input class="table-input note" type="text" name="bill-note" id="note-${i}" value='${billServices[i].note == "" ? "" : billServices[i].note}' placeholder="Enter something to describe this bill" ${billObj.getStatus() ? "disabled" : ""}></td>
+            <td>
+                <button id="${i}" class="round-btn delete-table-btn " ${billObj.getStatus() ? "disabled" : ""}>
+                    <i class="fa-solid fa-trash fa-xs"></i> 
+                    <span class="tooltiptext">Delete</span>
+                </button> 
+            </td>
+        </tr>`;
+  }
+
+  if (!billObj.getStatus()) {
+    rowContent += `<tr>
+            <td><select id="service-${billObj.getServicesCount()}" class="table-select service inactive">${serviceOptions}</select></td>
+            <td id="price-${billObj.getServicesCount()}" class="inactive">0.00</td>
+            <td><select id="staff-${billObj.getServicesCount()}" class="table-select staff inactive">${staffOptions}</select></td>
+            <td><input class="table-input discount inactive" type="text" name="bill-discount" id="discount-${billObj.getServicesCount()}" value="" placeholder="0.00"></td>
+            <td id="total-${billObj.getServicesCount()}" class="inactive">0.00</td>
+            <td><input class="table-input note inactive" type="text" name="bill-note" id="note-${billObj.getServicesCount()}" value="" placeholder="Enter something to describe this bill"></td>
+            <td>
+                <button id="add-service" class="round-btn sm add-table-btn">
+                    <i class="fa-solid fa-plus fa-xs"></i>
+                    <span class="tooltiptext">Add new</span> 
+                </button> 
+            </td>
+        </tr>`;
+  }
+
+  return rowContent;
+}
+
+function oldLoadBill(billObj) {
   //display bill details
-  document.querySelector(".col-2").innerHTML = generateBillContent(billObj);
+  //document.querySelector(".col-2").innerHTML = generateBillContent(billObj);
   setStaffAndServices(billObj.getBillServices());
 
   //handle values changed
@@ -245,104 +450,6 @@ function handleAddSingleService(billObj) {
         loadBill(billObj); //reload the bill interface
       })
     : null;
-}
-
-//generate bill info to html
-function generateBillContent(billObj) {
-  return `
-        <div class="title-container">
-          <h2 class="col-title">
-            <b style="color: #474747">Bill ID: </b> 
-             ${billObj.getId()} | 
-            <b style="color: #474747">Client's name: </b> 
-            ${billObj.getCusName()} | 
-            <b style="color: #474747">Contact: </b> 
-            ${billObj.getMobile()} | 
-            <b style="color: #474747">Come at: </b> 
-            ${billObj.getEntranceDate()}, ${billObj.getEntranceTime()}
-          </h2>
-        </div>
-        <table id="myTable" class="hover" style="width: 100%">
-            <thead>
-                <tr>
-                    <th>Service</th>
-                    <th>Price</th>
-                    <th>Done by</th>
-                    <th>Discount</th>
-                    <th>Final price</th>
-                    <th>Note</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                ${getRows(billObj)}
-            </tbody>
-        </table>
-        <div class="bill-footer">
-            <span style="margin-left: 20px">Sub total: <b id="total" style="color: #BBA366">${checkDollarStringFormat(billObj.getTotal(tempServiceList))}</b> | Status: <b style="color: ${billObj.getStatus() ? "#4C7A6F" : "#C97C82"}">${billObj.getStatus() ? "Paid" : "Unpaid"}</b></span>
-            <div style="display: flex; margin-right: 20px; margin-bottom: 13px">
-                <button id="check-out-btn" class="square-btn confirm-btn">${billObj.getStatus() ? "Uncheck this bill" : "Check out"}</button>
-                <button id="bill-delete-btn" class="square-btn cancel-btn">Delete</button>
-            </div>
-        </div>
-    `;
-}
-
-//get row content for the service table
-function getRows(billObj) {
-  let rowContent = "";
-  const serviceOptions = tempServiceList
-    .map((service) => {
-      return `<option value=${service.id}>${service.title}</option>`;
-    })
-    .join("");
-  const staffOptions = tempStaffList
-    .map((staff) => {
-      if (staff.active) {
-        return `<option value=${staff.id}>${staff.firstName} ${staff.lastName}</option>`;
-      }
-    })
-    .join("");
-
-  const billServices = billObj.getBillServices();
-  for (let i = 0; i < billServices.length; i++) {
-    const service = serviceList.find(
-      (service) => service.id == billServices[i].serviceId,
-    );
-    rowContent += `<tr>
-            <td><select id="service-${i}" class="table-select service" ${billObj.getStatus() ? "disabled" : ""}>${serviceOptions}</select></td>
-            <td id="price-${i}">${checkDollarStringFormat(service.price)}</td>
-            <td><select id="staff-${i}" class="table-select staff" ${billObj.getStatus() ? "disabled" : ""}>${staffOptions}</select></td>
-            <td><input class="table-input discount" type="text" name="bill-discount" id="discount-${i}" value='${billServices[i].discount == 0 ? "0.00" : checkDollarStringFormat(billServices[i].discount)}' placeholder="0.00" ${billObj.getStatus() ? "disabled" : ""}></td>
-            <td id="total-${i}">${checkDollarStringFormat(parseFloat(service.price).toFixed(2) - parseFloat(billServices[i].discount).toFixed(2))}</td>
-            <td><input class="table-input note" type="text" name="bill-note" id="note-${i}" value='${billServices[i].note == "" ? "" : billServices[i].note}' placeholder="Enter something to describe this bill" ${billObj.getStatus() ? "disabled" : ""}></td>
-            <td>
-                <button id="${i}" class="round-btn delete-table-btn " ${billObj.getStatus() ? "disabled" : ""}>
-                    <i class="fa-solid fa-trash fa-xs"></i> 
-                    <span class="tooltiptext">Delete</span>
-                </button> 
-            </td>
-        </tr>`;
-  }
-
-  if (!billObj.getStatus()) {
-    rowContent += `<tr>
-            <td><select id="service-${billObj.getServicesCount()}" class="table-select service inactive">${serviceOptions}</select></td>
-            <td id="price-${billObj.getServicesCount()}" class="inactive">0.00</td>
-            <td><select id="staff-${billObj.getServicesCount()}" class="table-select staff inactive">${staffOptions}</select></td>
-            <td><input class="table-input discount inactive" type="text" name="bill-discount" id="discount-${billObj.getServicesCount()}" value="" placeholder="0.00"></td>
-            <td id="total-${billObj.getServicesCount()}" class="inactive">0.00</td>
-            <td><input class="table-input note inactive" type="text" name="bill-note" id="note-${billObj.getServicesCount()}" value="" placeholder="Enter something to describe this bill"></td>
-            <td>
-                <button id="add-service" class="round-btn sm add-table-btn">
-                    <i class="fa-solid fa-plus fa-xs"></i>
-                    <span class="tooltiptext">Add new</span> 
-                </button> 
-            </td>
-        </tr>`;
-  }
-
-  return rowContent;
 }
 
 //change choose indicator's color

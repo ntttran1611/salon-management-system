@@ -29,6 +29,10 @@ h1#dashboard-name {
   font-variation-settings: "wdth" 100;
 }
 
+b.bill-info-title {
+  color: #474747;
+}
+
 h2.col-title {
   display: flex;
   margin: 0;
@@ -37,6 +41,11 @@ h2.col-title {
   font-size: 100%;
   font-weight: 500;
   font-style: normal;
+}
+
+h2#bill-list-title {
+  display: flex;
+  align-items: center;
 }
 
 h4#modal-header-text {
