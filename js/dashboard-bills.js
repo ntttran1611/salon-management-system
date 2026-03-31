@@ -17,10 +17,14 @@ import {
   getTemplate,
   tableHeaderGenerator,
 } from "../lib/utils/layout-handler.js";
-import { getServiceList } from "../lib/api/service-api.js";
-import { getStaffList } from "../lib/api/staff-api.js";
 import { checkIsPriceNumber } from "../lib/utils/data-validation.js";
 import { checkout } from "../lib/components/check-out-dialog.js";
+import {
+  generateServiceDeleteButton,
+  generateStaffOptionsForBillTable,
+  generateTableInput,
+  generateServiceOptionsForBillTable,
+} from "./components/bill-components.js";
 
 document.querySelector("#bills").addEventListener("click", loadPage);
 window.onload = loadPage;
@@ -191,7 +195,11 @@ function renderBillTableRows() {
         {
           data: "serviceTitle",
           render: function (data) {
-            return generateServiceOptionsForBillTable(data, isBillPaid);
+            return generateServiceOptionsForBillTable(
+              data,
+              isBillPaid,
+              handleServiceSelectValueChanged,
+            );
           },
         },
         {
@@ -206,7 +214,7 @@ function renderBillTableRows() {
             return generateStaffOptionsForBillTable(
               data,
               isBillPaid,
-              currentBill,
+              handleStaffSelectValueChanged,
             );
           },
         },
@@ -216,7 +224,6 @@ function renderBillTableRows() {
             return generateTableInput(
               data,
               isBillPaid,
-              currentBill,
               "discount",
               handleDiscountInputChanged,
             );
@@ -234,7 +241,6 @@ function renderBillTableRows() {
             return generateTableInput(
               data,
               isBillPaid,
-              currentBill,
               "note",
               handleNoteInputChanged,
             );
@@ -243,79 +249,16 @@ function renderBillTableRows() {
         {
           data: "serviceFunc",
           render: function (data) {
-            return generateServiceDeleteButton(data, isBillPaid, currentBill);
+            return generateServiceDeleteButton(
+              data,
+              isBillPaid,
+              handleDeleteBillService,
+            );
           },
         },
       ],
     });
   }
-}
-
-function generateServiceDeleteButton(data, isBillPaid, bill) {
-  const button = document.createElement("button");
-  button.className = `round-btn delete-table-btn ${isBillPaid ? "bill-paid" : ""}`;
-  button.innerHTML = ` <i class="fa-solid fa-trash fa-xs"></i> 
-                    <span class="tooltiptext">Delete</span>`;
-
-  button.disabled = isBillPaid;
-  button.id = `table-delete-btn-${data}`;
-
-  button.addEventListener("click", (e) => handleDeleteBillService(e, bill));
-  return button;
-}
-
-function generateServiceOptionsForBillTable(data, isBillPaid) {
-  const select = document.createElement("select");
-  select.id = `service-${data.id}`;
-  select.className = "table-select service";
-  select.innerHTML = "";
-  const tempServiceList = getServiceList();
-  for (let service of tempServiceList) {
-    const option = document.createElement("option");
-    option.value = service.id;
-    option.textContent = service.title;
-    select.appendChild(option);
-  }
-  select.dataset.billServiceId = data.id;
-  select.disabled = isBillPaid;
-  select.value = data.value;
-  select.addEventListener("change", (e) => handleServiceSelectValueChanged(e));
-  return select;
-}
-
-function generateStaffOptionsForBillTable(data, isBillPaid, bill) {
-  const select = document.createElement("select");
-  select.id = `staff-${data.id}`;
-  select.className = "table-select staff";
-
-  const tempStaffList = getStaffList();
-  for (let staff of tempStaffList) {
-    const option = document.createElement("option");
-    option.value = staff.id;
-    option.textContent = `${staff.firstName} ${staff.lastName}`;
-    select.appendChild(option);
-  }
-  select.dataset.billServiceId = data.id;
-  select.disabled = isBillPaid;
-  select.value = data.value;
-  select.addEventListener("change", (e) =>
-    handleStaffSelectValueChanged(e, bill),
-  );
-  return select;
-}
-
-function generateTableInput(data, isBillPaid, bill, inputCate, eventHandler) {
-  const input = document.createElement("input");
-  input.disabled = isBillPaid;
-  input.className = `table-input ${inputCate}`;
-  input.type = "text";
-  input.name = `bill-${inputCate}`;
-  input.id = `${inputCate}-${data.id}`;
-  input.value = data.value;
-  input.dataset.billServiceId = data.id;
-  input.addEventListener("change", (e) => eventHandler(e, bill));
-
-  return input;
 }
 
 function handleServiceSelectValueChanged(e) {
@@ -326,36 +269,38 @@ function handleServiceSelectValueChanged(e) {
   renderBillTableRows();
 }
 
-function handleStaffSelectValueChanged(e, bill) {
+function handleStaffSelectValueChanged(e) {
+  if (!currentBill) return;
   const billServiceId = e.target.dataset.billServiceId;
   const staffId = parseInt(e.target.value);
-  updateStaff(staffId, billServiceId, bill);
-  loadBill(bill);
+  updateStaff(staffId, billServiceId, currentBill);
 }
 
-function handleDiscountInputChanged(e, bill) {
-  const billServiceId = e.target.id.slice(-1);
+function handleDiscountInputChanged(e) {
+  if (!currentBill) return;
+  const billServiceId = e.target.dataset.billServiceId;
   const input = e.target.value;
   if (checkIsPriceNumber(input)) {
     e.target.value = formatMoney(parsePriceCents(input));
-    updateDiscount(input, billServiceId, bill);
-    loadBill(bill);
+    updateDiscount(input, billServiceId, currentBill);
+    renderBillTableRows();
   } else {
     e.target.value = "0.00";
   }
 }
 
-function handleNoteInputChanged(e, bill) {
-  const billServiceId = e.target.id.slice(-1);
+function handleNoteInputChanged(e) {
+  if (!currentBill) return;
+  const billServiceId = e.target.dataset.billServiceId;
   const input = e.target.value;
-  updateNote(input, billServiceId, bill);
-  loadBill(bill);
+  updateNote(input, billServiceId, currentBill);
 }
 
-function handleDeleteBillService(e, bill) {
-  const billServiceId = e.target.id.slice(-1);
-  deleteBillServiceTemp(billServiceId, bill);
-  loadBill(bill);
+function handleDeleteBillService(e) {
+  if (!currentBill) return;
+  const billServiceId = e.target.dataset.billServiceId;
+  deleteBillServiceTemp(billServiceId, currentBill);
+  renderBillTableRows();
 }
 
 //change choose indicator's color
