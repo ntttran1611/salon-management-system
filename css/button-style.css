@@ -1,14 +1,43 @@
 /* BUTTON */
 button {
-  font-size: 16px;
+  font-size: 100%;
   font-weight: 400;
   font-style: normal;
   border: none;
   cursor: pointer;
+  color: whitesmoke;
+  background-color: var(--pink-grey);
+}
+
+button i {
   color: white;
 }
 
-.round-btn {
+button.square-btn {
+  padding: 10px 15px 10px 15px;
+  margin: 15px 3px 0 3px;
+  border-radius: 8px;
+}
+
+button.confirm-btn {
+  background-color: var(--primary);
+}
+
+button.cancel-btn {
+  background-color: var(--pink-grey);
+}
+
+button.outer-left {
+  border-top-left-radius: 0px;
+  border-bottom-left-radius: 0px;
+}
+
+button.outer-right {
+  border-top-right-radius: 0px;
+  border-bottom-right-radius: 0px;
+}
+
+button.round-btn {
   position: relative;
   display: inline-block;
   border-radius: 50px;
@@ -19,51 +48,33 @@ button {
   background-color: var(--pink-grey);
 }
 
-.round-btn.sm {
-  padding: 3px 6.5px 3px 6.5px;
-}
-
-.delete-table-btn {
+button.round-btn.delete-table-btn {
   background-color: var(--warning);
   padding: 3px 6.5px 3px 6.5px;
 }
 
-.square-btn {
-  padding: 10px 15px 10px 15px;
-  margin-top: 15px;
+button.round-btn.delete-table-btn.bill-paid {
+  background-color: var(--light-grey);
 }
 
-button i {
-  color: white;
+button.add-btn {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  padding: 10px;
+  background-color: var(--secondary);
+}
+
+.bill-button-container {
+  display: flex;
+}
+
+.round-btn.sm {
+  padding: 3px 6.5px 3px 6.5px;
 }
 
 #voucher-delete {
   color: var(--warning);
-}
-
-.add-btn {
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
-  padding: 15px;
-  background-color: var(--secondary);
-}
-
-.add-table-btn {
-  background-color: var(--secondary);
-}
-
-.confirm-btn {
-  margin-right: 5px;
-  background-color: var(--primary);
-  border-top-right-radius: 10px;
-  border-bottom-right-radius: 10px;
-}
-
-.cancel-btn {
-  background-color: var(--pink-grey);
-  border-top-left-radius: 10px;
-  border-bottom-left-radius: 10px;
 }
 
 #modal-delete-btn,

@@ -35,3 +35,7 @@ tbody::-webkit-scrollbar {
   display: none;
   /* Safari and Chrome */
 }
+
+table.bill-paid {
+  color: var(--light-grey);
+}

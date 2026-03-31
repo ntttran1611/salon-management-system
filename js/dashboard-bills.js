@@ -1,13 +1,17 @@
-import { Bills } from "../data/bill-list.js";
-import { serviceList } from "../data/service-list.js";
-import { StaffList } from "../data/staff-list.js";
-import { Bill, getBillList } from "../lib/api/bill-api.js";
-import { checkDollarStringFormat, formatMoney } from "../lib/utils/currency.js";
 import {
-  showDeleteAlert,
-  showNoticeAlert,
-  showCheckOutDialog,
-} from "../lib/components/dialog.js";
+  getBillList,
+  getBillTotalCents,
+  getBillTableData,
+  cloneBill,
+  updateStaff,
+  updateService,
+  updateDiscount,
+  updateNote,
+  deleteBillServiceTemp,
+  deleteBill,
+} from "../lib/api/bill-api.js";
+import { formatMoney, parsePriceCents } from "../lib/utils/currency.js";
+import { showDeleteAlert, showNoticeAlert } from "../lib/components/dialog.js";
 import {
   animateTwoColLayout,
   getTemplate,
@@ -15,24 +19,23 @@ import {
 } from "../lib/utils/layout-handler.js";
 import { getServiceList } from "../lib/api/service-api.js";
 import { getStaffList } from "../lib/api/staff-api.js";
+import { checkIsPriceNumber } from "../lib/utils/data-validation.js";
+import { checkout } from "../lib/components/check-out-dialog.js";
 
 document.querySelector("#bills").addEventListener("click", loadPage);
 window.onload = loadPage;
-
-const tempBillsList = Bills; //must be filtered by branches
-const tempServiceList = serviceList;
-const tempStaffList = StaffList;
 
 //display all bills and the first bill when the page is load
 async function loadPage() {
   if (document.querySelector("#bills").className.includes("active")) {
     const tempBillList = getBillList(1);
-    await buildTwoColLayoutForBillTab(tempBillList);
+    await buildTwoColLayoutForBillTab();
+    await getBillListContent(tempBillList);
     animateTwoColLayout();
   }
 }
 
-async function buildTwoColLayoutForBillTab(tempBillList) {
+async function buildTwoColLayoutForBillTab() {
   const getTwoColTemplate = await getTemplate(
     "two-col-template",
     "#bill-two-col-template",
@@ -41,22 +44,19 @@ async function buildTwoColLayoutForBillTab(tempBillList) {
   /**FIX THIS: use textCOntent instead */
   templateClone.querySelector("#bill-list-title").innerHTML =
     `<i class="fa-solid fa-code-branch"></i> <span>Kingston</span>`;
-  await getBillListContent(
-    tempBillList,
-    templateClone.querySelector("#bill-list"),
-  );
+
   document.querySelector("main").innerHTML = "";
   document.querySelector("main").appendChild(templateClone);
 }
 
-async function getBillListContent(tempBillList, listNode) {
+async function getBillListContent(tempBillList) {
   if (tempBillList.length == 0) {
     const noteElem = document.createElement("p");
     noteElem.className = "note-lg";
     noteElem.textContent = "No bill recoreded";
-    listNode.appendChild(noteElem);
+    document.querySelector("#bill-list").appendChild(noteElem);
   } else {
-    listNode.innerHTML = "";
+    document.querySelector("#bill-list").innerHTML = "";
     let count = 1;
     for (let bill of tempBillList) {
       const listItemTemplate = await getTemplate(
@@ -78,35 +78,80 @@ async function getBillListContent(tempBillList, listNode) {
       listItemClone.querySelector(".list-item-content").textContent =
         `${count} - ${bill.cusName}`;
       count++;
-      listNode.appendChild(listItemClone);
+      document.querySelector("#bill-list").appendChild(listItemClone);
     }
   }
 }
 
-async function loadBill(bill) {
+async function loadBill(orgBill) {
+  const bill = cloneBill(orgBill);
   await buildBillInfoLayout(bill);
   buildBillTable(bill);
 }
 
 async function buildBillInfoLayout(bill) {
+  const isBillPaid = bill.paid;
   const billInfoTemplate = await getTemplate(
     "bill-template",
     "#bill-info-template",
   );
-
   const templateClone = document.importNode(billInfoTemplate.content, true);
   templateClone.querySelector("span#bill-cusName").textContent =
-    ` \u00A0${bill.cusName} | \u00A0`;
+    ` \u00A0${bill.cusName}, \u00A0`;
   templateClone.querySelector("span#bill-mobile").textContent =
-    ` \u00A0${bill.mobile} | \u00A0`;
+    ` \u00A0${bill.mobile}, \u00A0`;
   templateClone.querySelector("span#bill-time").textContent =
     ` \u00A0${bill.entranceDate}, ${bill.entranceTime}`;
+  templateClone.querySelector("span#bill-total").textContent =
+    `\u00A0${formatMoney(getBillTotalCents(bill))}\u00A0`;
+  templateClone.querySelector("span#bill-status").textContent = isBillPaid
+    ? "\u00A0PAID"
+    : "\u00A0UNPAID";
+  templateClone.querySelector("span#bill-status").className = isBillPaid
+    ? "bill-paid"
+    : "bill-unpaid";
+  templateClone
+    .querySelector("button#bill-delete-btn")
+    .addEventListener("click", () => deleteBill(bill));
+  templateClone
+    .querySelector("#check-out-btn")
+    .addEventListener("click", () => {
+      handleCheckoutButtonClicked(isBillPaid, bill);
+    });
 
+  templateClone
+    .querySelector("#bill-reset-btn")
+    .addEventListener("click", () => {
+      resetBill(bill);
+    });
+
+  if (isBillPaid) {
+    templateClone.querySelector(".title-container").className += " bill-paid";
+    templateClone.querySelector("table").className += " bill-paid";
+    templateClone.querySelector("#check-out-btn").textContent = "Uncheck bill";
+    templateClone.querySelector("#bill-reset-btn").disabled = true;
+  }
   document.querySelector(".col-2").innerHTML = "";
   document.querySelector(".col-2").appendChild(templateClone);
 }
 
+function handleCheckoutButtonClicked(isBillPaid, bill) {
+  if (isBillPaid) {
+    bill.paid = false;
+    loadBill(bill);
+  } else {
+    checkout(bill);
+  }
+}
+
+function resetBill(bill) {
+  const tempBillList = getBillList(1);
+  const orgBill = tempBillList.find((orgBill) => bill.id === orgBill.id);
+  loadBill(orgBill);
+}
+
 function buildBillTable(bill) {
+  const isBillPaid = bill.paid;
   const tableHeaderNames = [
     "Service",
     "Price",
@@ -114,13 +159,12 @@ function buildBillTable(bill) {
     "Discount",
     "Final price",
     "Note",
-    "Funcs",
+    "Delete",
   ];
   const tableHeaders = tableHeaderGenerator(tableHeaderNames);
   document.querySelector("thead").appendChild(tableHeaders);
 
   const data = getBillTableData(bill);
-  console.log(data);
   //build the table
   new DataTable("#myTable", {
     paging: false,
@@ -131,7 +175,7 @@ function buildBillTable(bill) {
       {
         data: "serviceTitle",
         render: function (data) {
-          return getServiceOptionsForBillTable(data);
+          return generateServiceOptionsForBillTable(data, isBillPaid, bill);
         },
       },
       {
@@ -143,13 +187,19 @@ function buildBillTable(bill) {
       {
         data: "serviceStaff",
         render: function (data) {
-          return getStaffOptionsForBillTable(data);
+          return generateStaffOptionsForBillTable(data, isBillPaid, bill);
         },
       },
       {
         data: "serviceDiscount",
         render: function (data) {
-          return `<input class="table-input discount" type="text" name="bill-discount" id="discount-${data.id}" value='${data.value}' placeholder="0.00">`;
+          return generateTableInput(
+            data,
+            isBillPaid,
+            bill,
+            "discount",
+            handleDiscountInputChanged,
+          );
         },
       },
       {
@@ -161,23 +211,39 @@ function buildBillTable(bill) {
       {
         data: "serviceNote",
         render: function (data) {
-          return `<input class="table-input note" type="text" name="bill-note" id="note-${data.id}" value='${data.value}' placeholder="Note"></input>`;
+          return generateTableInput(
+            data,
+            isBillPaid,
+            bill,
+            "note",
+            handleNoteInputChanged,
+          );
         },
       },
       {
         data: "serviceFunc",
         render: function (data) {
-          return `<button id="${data}" class="round-btn delete-table-btn ">
-                    <i class="fa-solid fa-trash fa-xs"></i> 
-                    <span class="tooltiptext">Delete</span>
-                </button> `;
+          return generateServiceDeleteButton(data, isBillPaid, bill);
         },
       },
     ],
   });
 }
 
-function getServiceOptionsForBillTable(data) {
+function generateServiceDeleteButton(data, isBillPaid, bill) {
+  const button = document.createElement("button");
+  button.className = `round-btn delete-table-btn ${isBillPaid ? "bill-paid" : ""}`;
+  button.innerHTML = ` <i class="fa-solid fa-trash fa-xs"></i> 
+                    <span class="tooltiptext">Delete</span>`;
+
+  button.disabled = isBillPaid;
+  button.id = `table-delete-btn-${data}`;
+
+  button.addEventListener("click", (e) => handleDeleteBillService(e, bill));
+  return button;
+}
+
+function generateServiceOptionsForBillTable(data, isBillPaid, bill) {
   const select = document.createElement("select");
   select.id = `service-${data.id}`;
   select.className = "table-select service";
@@ -189,15 +255,19 @@ function getServiceOptionsForBillTable(data) {
     option.textContent = service.title;
     select.appendChild(option);
   }
+  select.disabled = isBillPaid;
   select.value = data.value;
+  select.addEventListener("change", (e) =>
+    handleServiceSelectValueChanged(e, bill),
+  );
   return select;
 }
 
-function getStaffOptionsForBillTable(data) {
+function generateStaffOptionsForBillTable(data, isBillPaid, bill) {
   const select = document.createElement("select");
   select.id = `staff-${data.id}`;
   select.className = "table-select staff";
-  select.innerHTML = "";
+
   const tempStaffList = getStaffList();
   for (let staff of tempStaffList) {
     const option = document.createElement("option");
@@ -205,251 +275,66 @@ function getStaffOptionsForBillTable(data) {
     option.textContent = `${staff.firstName} ${staff.lastName}`;
     select.appendChild(option);
   }
+  select.disabled = isBillPaid;
   select.value = data.value;
+  select.addEventListener("change", (e) =>
+    handleStaffSelectValueChanged(e, bill),
+  );
   return select;
 }
 
-function getBillTableData(bill) {
-  const data = [];
-  const tempServiceList = getServiceList();
-  for (let billService of bill.services) {
-    const serviceData = tempServiceList.find(
-      (service) => service.id == billService.serviceId,
-    );
-    const rowData = {
-      serviceTitle: { id: billService.id, value: billService.serviceId },
-      servicePrice: {
-        id: billService.id,
-        value: formatMoney(serviceData.priceCents),
-      },
-      serviceStaff: { id: billService.id, value: billService.staffId },
-      serviceDiscount: {
-        id: billService.id,
-        value: formatMoney(billService.discountCents),
-      },
-      serviceTotal: {
-        id: billService.id,
-        value: formatMoney(serviceData.priceCents - billService.discountCents),
-      },
-      serviceNote: { id: billService.id, value: billService.note },
-      serviceFunc: billService.id,
-    };
+function generateTableInput(data, isBillPaid, bill, inputCate, eventHandler) {
+  const input = document.createElement("input");
+  input.disabled = isBillPaid;
+  input.className = `table-input ${inputCate}`;
+  input.type = "text";
+  input.name = `bill-${inputCate}`;
+  input.id = `${inputCate}-${data.id}`;
+  input.value = data.value;
+  input.addEventListener("change", (e) => eventHandler(e, bill));
 
-    data.push(rowData);
-  }
-
-  return data;
+  return input;
 }
 
-//get row content for the service table
-function getRows(billObj) {
-  let rowContent = "";
-  const serviceOptions = tempServiceList
-    .map((service) => {
-      return `<option value=${service.id}>${service.title}</option>`;
-    })
-    .join("");
-  const staffOptions = tempStaffList
-    .map((staff) => {
-      if (staff.active) {
-        return `<option value=${staff.id}>${staff.firstName} ${staff.lastName}</option>`;
-      }
-    })
-    .join("");
-
-  const billServices = billObj.getBillServices();
-  for (let i = 0; i < billServices.length; i++) {
-    const service = serviceList.find(
-      (service) => service.id == billServices[i].serviceId,
-    );
-    rowContent += `<tr>
-            <td><select id="service-${i}" class="table-select service" ${billObj.getStatus() ? "disabled" : ""}>${serviceOptions}</select></td>
-            <td id="price-${i}">${checkDollarStringFormat(service.price)}</td>
-            <td><select id="staff-${i}" class="table-select staff" ${billObj.getStatus() ? "disabled" : ""}>${staffOptions}</select></td>
-            <td><input class="table-input discount" type="text" name="bill-discount" id="discount-${i}" value='${billServices[i].discount == 0 ? "0.00" : checkDollarStringFormat(billServices[i].discount)}' placeholder="0.00" ${billObj.getStatus() ? "disabled" : ""}></td>
-            <td id="total-${i}">${checkDollarStringFormat(parseFloat(service.price).toFixed(2) - parseFloat(billServices[i].discount).toFixed(2))}</td>
-            <td><input class="table-input note" type="text" name="bill-note" id="note-${i}" value='${billServices[i].note == "" ? "" : billServices[i].note}' placeholder="Enter something to describe this bill" ${billObj.getStatus() ? "disabled" : ""}></td>
-            <td>
-                <button id="${i}" class="round-btn delete-table-btn " ${billObj.getStatus() ? "disabled" : ""}>
-                    <i class="fa-solid fa-trash fa-xs"></i> 
-                    <span class="tooltiptext">Delete</span>
-                </button> 
-            </td>
-        </tr>`;
-  }
-
-  if (!billObj.getStatus()) {
-    rowContent += `<tr>
-            <td><select id="service-${billObj.getServicesCount()}" class="table-select service inactive">${serviceOptions}</select></td>
-            <td id="price-${billObj.getServicesCount()}" class="inactive">0.00</td>
-            <td><select id="staff-${billObj.getServicesCount()}" class="table-select staff inactive">${staffOptions}</select></td>
-            <td><input class="table-input discount inactive" type="text" name="bill-discount" id="discount-${billObj.getServicesCount()}" value="" placeholder="0.00"></td>
-            <td id="total-${billObj.getServicesCount()}" class="inactive">0.00</td>
-            <td><input class="table-input note inactive" type="text" name="bill-note" id="note-${billObj.getServicesCount()}" value="" placeholder="Enter something to describe this bill"></td>
-            <td>
-                <button id="add-service" class="round-btn sm add-table-btn">
-                    <i class="fa-solid fa-plus fa-xs"></i>
-                    <span class="tooltiptext">Add new</span> 
-                </button> 
-            </td>
-        </tr>`;
-  }
-
-  return rowContent;
+function handleServiceSelectValueChanged(e, bill) {
+  const billServiceId = e.target.id.slice(-1);
+  const serviceId = parseInt(e.target.value);
+  updateService(serviceId, billServiceId, bill);
+  loadBill(bill);
 }
 
-function oldLoadBill(billObj) {
-  //display bill details
-  //document.querySelector(".col-2").innerHTML = generateBillContent(billObj);
-  setStaffAndServices(billObj.getBillServices());
-
-  //handle values changed
-  handleServiceOptionChanged(billObj);
-  handleDiscountChanged(billObj);
-  handleNoteChaged(billObj);
-  handleStaffChanged(billObj);
-
-  //handle buttons clicked
-  handleDeleteSingleService(billObj);
-  handleAddSingleService(billObj);
-  document.querySelector("#check-out-btn").onclick = () => {
-    //console.log(billObj);
-    billObj.getStatus()
-      ? uncheckBill(billObj)
-      : showCheckOutDialog(billObj, tempServiceList);
-  };
-  document.querySelector("#bill-delete-btn").onclick = () => {
-    showDeleteAlert(billObj.getId(), billObj.getCusName());
-  };
-
-  //build the table
-  new DataTable("#myTable", {
-    paging: false,
-    searching: false,
-    info: false,
-  });
+function handleStaffSelectValueChanged(e, bill) {
+  const billServiceId = e.target.id.slice(-1);
+  const staffId = parseInt(e.target.value);
+  updateStaff(staffId, billServiceId, bill);
+  loadBill(bill);
 }
 
-function uncheckBill(billObj) {
-  billObj.uncheck();
-  loadBill(billObj);
-}
-
-function handleServiceOptionChanged(billObj) {
-  const serviceSelects = document.querySelectorAll(".table-select.service");
-  for (let select of serviceSelects) {
-    select.onchange = (e) => {
-      const serviceIndex = e.target.id.slice(-1);
-      const service = serviceList.find(
-        (service) => service.id == e.target.value,
-      );
-
-      const priceRow = document.querySelector(`#price-${serviceIndex}`);
-      const totalBillText = document.querySelector("#total");
-      const totalRow = document.querySelector(`#total-${serviceIndex}`);
-      const discountRow = document.querySelector(`#discount-${serviceIndex}`);
-      //set relevant text outputs
-      priceRow.textContent = checkDollarStringFormat(service.price);
-      totalRow.textContent = checkDollarStringFormat(
-        (parseFloat(service.price) - parseFloat(discountRow.value)).toFixed(2),
-      );
-      //set the chosen service to the bill object
-      billObj.setServiceId(serviceIndex, parseInt(e.target.value));
-      totalBillText.textContent = `${checkDollarStringFormat(billObj.getTotal(tempServiceList))}`;
-    };
+function handleDiscountInputChanged(e, bill) {
+  const billServiceId = e.target.id.slice(-1);
+  const input = e.target.value;
+  if (checkIsPriceNumber(input)) {
+    e.target.value = formatMoney(parsePriceCents(input));
+    updateDiscount(input, billServiceId, bill);
+    loadBill(bill);
+  } else {
+    e.target.value = "0.00";
   }
 }
 
-function handleDiscountChanged(billObj) {
-  const discountInputs = document.querySelectorAll(".table-input.discount");
-  for (let discountInput of discountInputs) {
-    discountInput.onchange = (e) => {
-      if (e.target.value != "") {
-        //get the id of the bill service
-        const serviceIndex = e.target.id.slice(-1);
-        const priceRow = document.querySelector(`#price-${serviceIndex}`);
-        const totalRow = document.querySelector(`#total-${serviceIndex}`);
-        const totalBillText = document.querySelector("#total");
-        if (checkDollarStringFormat(e.target.value)) {
-          totalRow.textContent = checkDollarStringFormat(
-            (
-              parseFloat(priceRow.textContent) - parseFloat(e.target.value)
-            ).toFixed(2),
-          );
-          e.target.value = checkDollarStringFormat(e.target.value);
-        } else {
-          showNoticeAlert(
-            "Invalid input. Correct format: (e.g.) 16, 16.00 or 16.0",
-            "failed",
-          );
-          totalRow.textContent = priceRow.textContent;
-          e.target.value = "0.00";
-        }
-        billObj.setServiceDiscount(serviceIndex, parseFloat(e.target.value));
-        totalBillText.textContent = `${checkDollarStringFormat(billObj.getTotal(tempServiceList))}`;
-      } else {
-        e.target.value = "0.00";
-      }
-    };
-  }
+function handleNoteInputChanged(e, bill) {
+  const billServiceId = e.target.id.slice(-1);
+  const input = e.target.value;
+  updateNote(input, billServiceId, bill);
+  loadBill(bill);
 }
 
-function handleStaffChanged(billObj) {
-  const staffSelects = document.querySelectorAll(".table-select.staff");
-  for (let staffSelect of staffSelects) {
-    staffSelect.onchange = (e) => {
-      const serviceIndex = e.target.id.slice(-1);
-      billObj.setServiceStaff(serviceIndex, parseInt(e.target.value));
-    };
-  }
-}
+function handleDeleteBillService(e, bill) {
+  const billServiceId = e.target.id.slice(-1);
+  console.log;
+  deleteBillServiceTemp(billServiceId, bill);
 
-function handleNoteChaged(billObj) {
-  const noteInputs = document.querySelectorAll(".table-input.note");
-  for (let noteInput of noteInputs) {
-    noteInput.onchange = (e) => {
-      const serviceIndex = e.target.id.slice(-1);
-      billObj.setServiceNote(serviceIndex, parseInt(e.target.value));
-    };
-  }
-}
-
-//Deleting a service on the bill
-function handleDeleteSingleService(billObj) {
-  const deleteSingleServiceBtns =
-    document.querySelectorAll(".delete-table-btn");
-  for (let btn of deleteSingleServiceBtns) {
-    btn.onclick = () => {
-      billObj.deleteService(btn.id);
-      loadBill(billObj);
-    };
-  }
-}
-
-//Adding a service to the bill
-function handleAddSingleService(billObj) {
-  const addingBtn = document.querySelector(".add-table-btn");
-  addingBtn != null
-    ? (addingBtn.onclick = () => {
-        let addingIndex = billObj.getServicesCount(); //the next service index (of the service array) will be the length of the current service array
-        let serviceId = parseInt(
-          document.querySelector(`#service-${addingIndex}`).value,
-        );
-        let staffId = parseInt(
-          document.querySelector(`#staff-${addingIndex}`).value,
-        );
-        let discount =
-          document.querySelector(`#discount-${addingIndex}`).value == ""
-            ? 0
-            : parseFloat(
-                document.querySelector(`#discount-${addingIndex}`).value,
-              );
-        let note = document.querySelector(`#note-${addingIndex}`).value;
-
-        billObj.addService(serviceId, staffId, discount, note);
-        loadBill(billObj); //reload the bill interface
-      })
-    : null;
+  loadBill(bill);
 }
 
 //change choose indicator's color
@@ -462,15 +347,5 @@ function activateIndicator(id) {
       listItem.children[0].className += " active";
       listItem.children[1].style.fontWeight = "700";
     }
-  }
-}
-
-//display services and corresponding staff listed on the bill
-function setStaffAndServices(services) {
-  const serviceSelects = document.querySelectorAll(".table-select.service");
-  const staffSelects = document.querySelectorAll(".table-select.staff");
-  for (let i = 0; i < services.length; i++) {
-    serviceSelects[i].value = services[i].serviceId;
-    staffSelects[i].value = services[i].staffId == -1 ? 1 : services[i].staffId;
   }
 }

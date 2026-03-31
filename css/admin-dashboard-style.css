@@ -141,6 +141,10 @@ main {
   margin: 0 -15px 0 20px;
 }
 
+.title-container.bill-paid {
+  background-color: var(--light-grey);
+}
+
 /* COL-1 */
 .col-1 {
   position: relative;

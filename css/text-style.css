@@ -77,3 +77,19 @@ h4#modal-header-text {
   font-weight: 400;
   font-style: normal;
 }
+
+p#bill-sum > * {
+  font-weight: 700;
+}
+
+span#bill-total {
+  color: var(--dark-green);
+}
+
+span.bill-unpaid {
+  color: var(--warning);
+}
+
+span.bill-paid {
+  color: var(--dark-green);
+}
